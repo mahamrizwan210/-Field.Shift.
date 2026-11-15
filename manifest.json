@@ -1,0 +1,18 @@
+{
+  "name": "Field Shift — Satellite Agriculture Intelligence",
+  "short_name": "Field Shift",
+  "description": "Satellite Agriculture Intelligence & Crop Rotation Decision Engine for Punjab's 36 Districts (NASA POWER, SMAP L4 & Punjab Crop Statistics).",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070a0f",
+  "theme_color": "#10b981",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "public/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

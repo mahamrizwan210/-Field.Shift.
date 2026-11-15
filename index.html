@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Shift — Satellite Agriculture Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500;700&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --background: #070a0f;
+  --foreground: #f1f5f9;
+  --card: #0d131d;
+  --card-border: #1e293b;
+  --primary: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.22);
+  --secondary: #f97316;
+  --accent: #3b82f6;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --muted: #172033;
+  --muted-foreground: #94a3b8;
+  --border: #223049;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-full: 9999px;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-urdu: 'Noto Naskh Arabic', 'Plus Jakarta Sans', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { max-width: 100%; overflow-x: hidden; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+body.in-workspace {
+  padding-bottom: 58px;
+}
+
+html[lang="ur"] body {
+  font-family: var(--font-urdu);
+  line-height: 2.1;
+}
+html[lang="ur"] .val,
+html[lang="ur"] .rot-score,
+html[lang="ur"] code,
+html[lang="ur"] .bottom-telemetry-bar,
+html[lang="ur"] .calculator-input {
+  font-family: var(--font-mono);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.85); border-color: var(--primary); }
+  70% { box-shadow: 0 0 0 18px rgba(16, 185, 129, 0); border-color: var(--primary); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.guide-highlight {
+  animation: pulseGlow 1.5s ease-out 2;
+  border-color: var(--primary) !important;
+  position: relative;
+  z-index: 60;
+}
+
+/* ============================================================================
+   1. DEDICATED FULL-SCREEN BEGINNING GUIDE (INTRO PORTAL)
+   ============================================================================ */
+.intro-portal {
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 15%, rgba(16, 185, 129, 0.14) 0%, transparent 45%),
+              radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 45%),
+              var(--background);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem 2rem 2.5rem;
+}
+.intro-portal.hidden {
+  display: none !important;
+}
+.intro-topbar {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.intro-hero {
+  max-width: 1440px;
+  width: 100%;
+  margin: 2rem auto 1.75rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.intro-hero-text {
+  max-width: 780px;
+}
+.intro-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: var(--primary);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.28rem 0.85rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.85rem;
+}
+.intro-hero h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.65rem;
+}
+.intro-hero h2 span {
+  color: var(--primary);
+}
+.intro-hero p {
+  font-size: 1rem;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+.intro-quick-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.intro-destinations-grid {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.25rem;
+}
+@media (max-width: 500px) {
+  .intro-destinations-grid { grid-template-columns: 1fr; }
+  .intro-portal { padding: 1rem; }
+}
+.dest-card {
+  background: rgba(13, 19, 29, 0.92);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.6rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.15rem;
+  position: relative;
+  overflow: hidden;
+}
+.dest-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: var(--border);
+  transition: var(--transition);
+}
+.dest-card:hover {
+  border-color: var(--primary);
+  background: linear-gradient(155deg, rgba(16, 185, 129, 0.1) 0%, #0d131d 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.48);
+}
+.dest-card:hover::before { background: var(--primary); }
+.dest-card.primary-dest {
+  border-color: rgba(16, 185, 129, 0.55);
+  background: linear-gradient(155deg, rgba(16, 185, 129, 0.14) 0%, #0d131d 100%);
+}
+.dest-card.primary-dest::before { background: var(--primary); }
+.dest-top { display: flex; align-items: flex-start; gap: 1.1rem; }
+.dest-icon {
+  width: 52px; height: 52px; flex-shrink: 0; border-radius: 14px;
+  background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.38);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary);
+}
+.dest-icon svg { width: 26px; height: 26px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dest-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #04100c;
+  background: var(--primary);
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.4rem;
+}
+.dest-title { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem; }
+.dest-desc { font-size: 0.86rem; color: var(--muted-foreground); line-height: 1.55; }
+.dest-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.07);
+  font-size: 0.84rem; font-weight: 700; color: var(--primary);
+}
+.intro-footer-note {
+  max-width: 1440px;
+  width: 100%;
+  margin: 2rem auto 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+
+/* ============================================================================
+   2. MAIN WORKSPACE SHELL (HIDDEN UNTIL USER ENTERS FROM BEGINNING GUIDE)
+   ============================================================================ */
+.workspace-shell.hidden {
+  display: none !important;
+}
+
+/* NAVBAR */
+.navbar {
+  position: sticky; top: 0; z-index: 1000;
+  background: rgba(7, 10, 15, 0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+}
+.navbar-inner {
+  max-width: 1840px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 66px; gap: 1rem; flex-wrap: wrap; padding: 0.5rem 0;
+}
+.brand {
+  display: flex; align-items: center; gap: 0.85rem;
+  cursor: default; user-select: none;
+}
+.brand-emblem {
+  width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(59, 130, 246, 0.2));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+.brand-emblem svg { width: 23px; height: 23px; stroke: var(--primary); }
+.brand-text h1 { font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: #fff; line-height: 1.2; letter-spacing: -0.01em; }
+.brand-text h1 span { color: var(--primary); }
+.brand-text p { font-size: 0.71rem; color: var(--muted-foreground); }
+
+.navbar-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.btn {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--foreground); padding: 0.46rem 0.9rem; border-radius: var(--radius-sm);
+  font-size: 0.8rem; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.4rem; transition: var(--transition);
+}
+.btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(16, 185, 129, 0.06); }
+.btn-primary {
+  background: var(--primary); border: 1px solid var(--primary);
+  color: #04100c; font-weight: 700;
+}
+.btn-primary:hover { background: #059669; color: #fff; }
+.btn-accent {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  color: #93c5fd; font-weight: 700;
+}
+.btn-accent:hover { background: rgba(59, 130, 246, 0.28); color: #fff; }
+.btn-tutorial {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fcd34d; font-weight: 700;
+}
+.btn-tutorial:hover { background: rgba(245, 158, 11, 0.28); color: #fff; }
+
+/* MODE BAR (CLEAN WORKSPACE TABS WITHOUT CLUTTER) */
+.mode-bar {
+  background: rgba(13, 19, 29, 0.94); border-bottom: 1px solid var(--border);
+  padding: 0.5rem 1.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.mode-bar-inner { max-width: 1840px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.mode-tabs-group { display: flex; align-items: center; gap: 0.45rem; }
+.tab-btn {
+  background: transparent; border: 1px solid transparent;
+  color: var(--muted-foreground); padding: 0.48rem 0.95rem; border-radius: var(--radius-sm);
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 0.42rem; white-space: nowrap; flex-shrink: 0; transition: var(--transition);
+}
+.tab-btn:hover { color: var(--foreground); background: var(--muted); }
+.tab-btn.active {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(16, 185, 129, 0.52);
+  color: var(--primary); font-weight: 700;
+}
+
+/* 2-COLUMN DASHBOARD LAYOUT: ENLARGED 480px INPUT PANEL + ENLARGED MAP / WORKSPACE */
+.cockpit-container {
+  max-width: 1840px; margin: 0 auto;
+  padding: 1.35rem 1.5rem 2.75rem;
+  display: grid;
+  grid-template-columns: 480px minmax(0, 1fr);
+  gap: 1.65rem;
+  align-items: start;
+}
+
+@media (max-width: 1240px) {
+  .cockpit-container { grid-template-columns: 420px minmax(0, 1fr); gap: 1.25rem; }
+}
+@media (max-width: 940px) {
+  .cockpit-container { grid-template-columns: minmax(0, 1fr); padding: 1rem; }
+  .left-controls { position: static !important; max-height: none !important; }
+  .bottom-telemetry-bar { position: static; margin-top: 1rem; }
+  body.in-workspace { padding-bottom: 0; }
+}
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.45rem; min-width: 0; transition: var(--transition);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.05rem; padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06); gap: 0.75rem; flex-wrap: wrap;
+}
+.card-title { font-family: var(--font-heading); font-size: 0.98rem; font-weight: 700; color: var(--foreground); display: flex; align-items: center; gap: 0.5rem; }
+.card-badge {
+  font-size: 0.7rem; font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.2rem 0.65rem; border-radius: var(--radius-full); color: var(--muted-foreground);
+}
+
+/* ENLARGED STICKY FARMER INPUT PANEL */
+.left-controls {
+  position: sticky; top: 80px; z-index: 200;
+  max-height: calc(100vh - 142px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.left-controls::-webkit-scrollbar { width: 6px; }
+.left-controls::-webkit-scrollbar-track { background: transparent; }
+.left-controls::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+#farmProfileCard {
+  border: 2px solid rgba(16, 185, 129, 0.48);
+  background: linear-gradient(165deg, #0f1726 0%, #090e17 100%);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5), 0 0 24px rgba(16, 185, 129, 0.09);
+  padding: 1.75rem;
+}
+
+.form-group { margin-bottom: 1.4rem; }
+.form-label {
+  font-size: 0.88rem; font-weight: 700; color: #fff;
+  margin-bottom: 0.55rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+}
+.form-label .val-tag { color: var(--primary); font-family: var(--font-mono); font-weight: 700; font-size: 0.94rem; }
+.search-wrap input, .select-box, .file-upload-input {
+  width: 100%; background: #070a0f; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.78rem 0.95rem;
+  color: var(--foreground); font-size: 0.93rem; outline: none; margin-bottom: 0.45rem; transition: var(--transition);
+}
+.search-wrap input:focus, .select-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18); }
+
+.info-banner {
+  margin-top: 0.5rem; padding: 0.78rem 0.95rem;
+  background: rgba(16, 185, 129, 0.09); border-inline-start: 3px solid var(--primary);
+  border-radius: var(--radius-sm); font-size: 0.82rem; color: var(--muted-foreground);
+}
+.info-banner b { color: #fff; }
+
+.slider {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 8px; border-radius: 4px; background: var(--muted); outline: none; margin: 0.7rem 0;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary); cursor: pointer; box-shadow: 0 0 12px rgba(16, 185, 129, 0.65);
+}
+
+.bento-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+.opt-btn {
+  background: #070a0f; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.76rem 0.6rem;
+  color: var(--muted-foreground); font-size: 0.83rem; font-weight: 600;
+  cursor: pointer; text-align: center; transition: var(--transition);
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+}
+.opt-btn:hover { border-color: rgba(255, 255, 255, 0.35); color: #fff; }
+.opt-btn.active {
+  background: rgba(16, 185, 129, 0.15); border-color: var(--primary);
+  color: var(--primary); font-weight: 700;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.18);
+}
+.opt-btn.active.orange {
+  background: rgba(249, 115, 22, 0.15); border-color: var(--secondary);
+  color: var(--secondary); box-shadow: 0 0 15px rgba(249, 115, 22, 0.18);
+}
+
+/* STEP-BY-STEP TUTORIAL DOCK (SEPARATE FROM BEGINNING GUIDE, TOGGLEABLE) */
+.tutorial-dock {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14) 0%, rgba(13, 19, 29, 0.98) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: var(--radius);
+  padding: 1rem 1.35rem;
+  margin-bottom: 1.25rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
+}
+.tutorial-dock.hidden {
+  display: none !important;
+}
+.tutor-badge {
+  background: var(--warning); color: #04100c; font-weight: 800;
+  font-size: 0.7rem; padding: 0.2rem 0.7rem; border-radius: var(--radius-full);
+  display: inline-block; margin-bottom: 0.3rem;
+}
+.tutor-msg { font-size: 0.87rem; color: #fff; line-height: 1.55; }
+.tutor-controls { display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0; }
+
+/* VIEWS */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ENLARGED INTERACTIVE PUNJAB PROVINCE MAP (PRIMARY DEFAULT VIEW) */
+.punjab-map-layout {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+@media (max-width: 1150px) {
+  .punjab-map-layout { grid-template-columns: 1fr; }
+}
+.punjab-svg-box {
+  background: radial-gradient(circle at 50% 45%, #0d1a2d 0%, #06090f 100%);
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 540px;
+}
+.punjab-svg-box svg {
+  width: 100%;
+  max-width: 580px;
+  height: auto;
+  max-height: 540px;
+}
+.district-pin { cursor: pointer; transition: all 0.2s ease; }
+.district-pin:hover circle { r: 7.5; fill: #fff; }
+.district-pin.active circle { r: 9; fill: var(--primary); stroke: #fff; stroke-width: 2.2; }
+.district-pin text { font-family: var(--font-sans); font-size: 8.5px; fill: #cbd5e1; font-weight: 600; pointer-events: none; }
+.district-pin.active text { fill: var(--primary); font-weight: 800; font-size: 10.5px; }
+
+/* HERO ROTATION BENTO + COMPACT ALL-IN-VIEW 7 ROTATION CARDS */
+.hero-rotation-bento {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.09) 0%, rgba(13, 19, 29, 0.96) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.45); border-radius: var(--radius);
+  padding: 1.15rem 1.35rem; margin-bottom: 1rem;
+}
+.pill-tag {
+  display: inline-block; margin-bottom: 0.4rem;
+  background: var(--primary); color: #04100c;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.18rem 0.72rem; border-radius: var(--radius-full);
+}
+.bento-metrics-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.65rem; margin-top: 0.85rem;
+}
+.metric-box {
+  background: #070a0f; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.72rem 0.8rem;
+}
+.metric-box .label { font-size: 0.7rem; color: var(--muted-foreground); font-weight: 600; }
+.metric-box .val { font-size: 1.1rem; font-weight: 700; color: #fff; font-family: var(--font-mono); margin: 0.15rem 0; }
+.metric-box .sub { font-size: 0.68rem; color: var(--muted-foreground); }
+
+/* COMPACT 4-COLUMN GRID SO ALL 7 ROTATIONS FIT TOGETHER WITHOUT SCROLLING */
+.rotations-bento-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+@media (max-width: 1480px) {
+  .rotations-bento-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .rotations-bento-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 460px) {
+  .rotations-bento-cards { grid-template-columns: 1fr; }
+}
+.rotation-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.62rem 0.72rem; transition: var(--transition);
+  display: flex; flex-direction: column; justify-content: space-between; gap: 0.35rem;
+}
+.rotation-card:hover { border-color: rgba(16, 185, 129, 0.5); }
+.rotation-card.selected { border-color: var(--primary); background: rgba(16, 185, 129, 0.08); }
+.rotation-card.baseline-card { border-color: rgba(249, 115, 22, 0.7); }
+
+.score-badge-green { background: rgba(16, 185, 129, 0.2); color: var(--primary); border: 1px solid rgba(16, 185, 129, 0.45); }
+.score-badge-amber { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.45); }
+.score-badge-red { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.45); }
+
+.rot-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.3rem; }
+.rot-card-title { font-family: var(--font-heading); font-size: 0.8rem; font-weight: 700; color: #fff; line-height: 1.2; }
+.rot-score { font-size: 0.84rem; font-weight: 800; font-family: var(--font-mono); padding: 0.08rem 0.4rem; border-radius: 5px; flex-shrink: 0; }
+.rot-compact-desc {
+  font-size: 0.68rem; color: var(--muted-foreground); line-height: 1.32;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* VISUALIZED SOW & HARVEST GANTT CALENDAR */
+.gantt-legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; font-size: 0.78rem; }
+.legend-pill { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.pheno-grid-table, .flat-table { width: 100%; border-collapse: collapse; min-width: 780px; }
+.pheno-grid-table th, .flat-table th {
+  padding: 0.7rem 0.45rem; font-size: 0.74rem; color: var(--muted-foreground);
+  border-bottom: 1px solid var(--border); text-align: center; background: #070a0f; font-weight: 700;
+}
+.pheno-grid-table th:first-child, .flat-table th:first-child { text-align: start; padding-left: 0.75rem; }
+.pheno-grid-table td, .flat-table td {
+  padding: 0.55rem 0.35rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.8rem;
+}
+.gantt-bar {
+  height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.02em;
+}
+.bar-sow { background: var(--primary); color: #04100c; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35); }
+.bar-harvest { background: var(--secondary); color: #fff; box-shadow: 0 2px 10px rgba(249, 115, 22, 0.35); }
+.bar-growth { background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.5); color: #93c5fd; }
+
+/* SOIL & CALCULATOR */
+.soil-bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.1rem; }
+.segmented-bar {
+  display: flex; height: 32px; border-radius: var(--radius-sm); overflow: hidden;
+  margin: 0.9rem 0; border: 1px solid var(--border); direction: ltr;
+}
+.seg-item {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.74rem; font-weight: 700; font-family: var(--font-mono); color: #000;
+}
+.bg-clay { background: #f97316; }
+.bg-sand { background: #facc15; }
+.bg-silt { background: #38bdf8; }
+.calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.calculator-input {
+  width: 100%; background: #070a0f; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.65rem 0.85rem;
+  color: var(--foreground); font-size: 0.9rem; font-family: var(--font-mono); outline: none;
+}
+.calculator-input:focus { border-color: var(--primary); }
+
+/* FIXED BOTTOM TELEMETRY BAR */
+.bottom-telemetry-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+  background: rgba(9, 13, 22, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  padding: 0.55rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  font-size: 0.76rem; font-family: var(--font-mono);
+  box-shadow: 0 -6px 25px rgba(0, 0, 0, 0.5);
+}
+.telemetry-group { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.telemetry-item { display: flex; align-items: center; gap: 0.45rem; color: var(--muted-foreground); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+.telemetry-item .val { color: #fff; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ==========================================================================
+     SCREEN 1: SEPARATE BEGINNING GUIDE (CLEAN INTRO DESTINATION PORTAL)
+     ========================================================================== -->
+<section class="intro-portal" id="beginningGuidePortal" aria-label="Beginning Guide Portal">
+  <header class="intro-topbar">
+    <div class="brand">
+      <div class="brand-emblem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          <circle cx="12" cy="12" r="4"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1 data-i18n="brandTitle">Field Shift <span>// Satellite Agriculture Intelligence</span></h1>
+        <p data-i18n="challengeSub">NASA POWER · NASA SMAP L4 · Punjab Crop Statistics (2024–25)</p>
+      </div>
+    </div>
+
+    <div class="navbar-actions">
+      <button class="btn btn-primary" onclick="toggleLanguage()" id="introLangToggle">🌐 اردو (Urdu)</button>
+      <button class="btn btn-tutorial" onclick="enterWorkspace('map', true)" data-i18n="introStartTutBtn">🎓 Enter with Step-by-Step Tutorial</button>
+    </div>
+  </header>
+
+  <div class="intro-hero">
+    <div class="intro-hero-text">
+      <div class="intro-eyebrow" data-i18n="introEyebrow">🛰️ BEGINNING GUIDE · CHOOSE YOUR DESTINATION</div>
+      <h2 data-i18n="introHeroHeading">Where would you like to <span>begin today?</span></h2>
+      <p data-i18n="introHeroSub">Select a module below to enter the Field Shift workspace. By default, your enlarged Farmer Input Panel opens directly beside the interactive 36-District Punjab Map and dynamically updates as you apply filters.</p>
+    </div>
+    <div class="intro-quick-actions">
+      <button class="btn btn-primary" style="padding:0.75rem 1.35rem; font-size:0.9rem;" onclick="enterWorkspace('map', false)" data-i18n="introPrimaryEnter">🗺️ Open Map & Farm Inputs →</button>
+    </div>
+  </div>
+
+  <div class="intro-destinations-grid" id="introDestinationsGrid"></div>
+
+  <div class="intro-footer-note">
+    <span data-i18n="introFooterLeft">Verified Telemetry: 36 Districts of Punjab · NASA POWER & SMAP L4 Soil Moisture</span>
+    <span data-i18n="introFooterRight">Tip: You can return to this Beginning Guide anytime from the top navigation bar.</span>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SCREEN 2: MAIN WORKSPACE (ENLARGED INPUT PANEL + ENLARGED MAP & TOOLS)
+     ========================================================================== -->
+<div class="workspace-shell hidden" id="mainWorkspaceShell">
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="brand">
+        <div class="brand-emblem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            <circle cx="12" cy="12" r="4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 data-i18n="brandTitle">Field Shift <span>// Satellite Agriculture Intelligence</span></h1>
+          <p data-i18n="challengeSub">NASA POWER · NASA SMAP L4 · Punjab Crop Statistics (2024–25)</p>
+        </div>
+      </div>
+
+      <div class="navbar-actions">
+        <button class="btn btn-accent" onclick="openBeginningGuide()" data-i18n="btnBeginningGuide">🏠 Beginning Guide</button>
+        <button class="btn btn-tutorial" onclick="startTutorial()" id="btnStartTutorial" data-i18n="btnStartTut">🎓 Start Tutorial</button>
+        <button class="btn btn-primary" onclick="toggleLanguage()" id="btnLangToggle">🌐 اردو (Urdu)</button>
+        <button class="btn" id="btnShareLink" onclick="shareProfileLink()" data-i18n="btnShare">🔗 Share Plan</button>
+        <button class="btn" onclick="window.print()" data-i18n="btnPrint">🖨️ Print</button>
+        <button class="btn" onclick="exportDataCSV()" data-i18n="btnCsv">📥 CSV</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mode-bar">
+    <div class="mode-bar-inner">
+      <div class="mode-tabs-group">
+        <button class="tab-btn active" data-mode="map" onclick="setMode('map')" data-i18n="tabMap">🗺️ Punjab Map</button>
+        <button class="tab-btn" data-mode="rotation" onclick="setMode('rotation')" data-i18n="tabRotation">🔄 Crop Rotations (7)</button>
+        <button class="tab-btn" data-mode="phenology" onclick="setMode('phenology')" data-i18n="tabPhenology">📅 Sow & Harvest Calendar</button>
+        <button class="tab-btn" data-mode="yields" onclick="setMode('yields')" data-i18n="tabYields">🌾 Yields & Profit</button>
+        <button class="tab-btn" data-mode="soil" onclick="setMode('soil')" data-i18n="tabSoil">🧪 Soil & NASA Labs</button>
+        <button class="tab-btn" data-mode="data" onclick="setMode('data')" data-i18n="tabData">📂 36-District Data</button>
+      </div>
+      <div id="autoSwitchPill" style="display:none; align-items:center; gap:0.5rem; font-size:0.75rem; color:var(--primary); background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); padding:0.25rem 0.7rem; border-radius:var(--radius-full);">
+        <span data-i18n="autoSwitchedMsg">✨ Updated Rotations from your filters</span>
+        <button class="btn" style="padding:0.15rem 0.5rem; font-size:0.7rem;" onclick="setMode('map')" data-i18n="btnBackToMap">🗺️ Back to Map</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="cockpit-container">
+
+    <!-- LEFT ENLARGED STICKY FARMER INPUT PANEL (ALWAYS BESIDE MAP & VIEWS) -->
+    <aside class="left-controls">
+      <div class="card" id="farmProfileCard">
+        <div class="card-header">
+          <span class="card-title" data-i18n="farmProfileTitle">📍 Farmer Profile & Decision Inputs</span>
+          <span class="card-badge">Live Sync</span>
+        </div>
+
+        <div class="form-group" id="fg-district">
+          <div class="form-label"><span data-i18n="lblDistrict">1. Select District (Punjab):</span></div>
+          <div class="search-wrap">
+            <input type="text" id="districtSearch" placeholder="Search district..." oninput="filterDistricts(this.value)">
+          </div>
+          <select id="districtSelect" class="select-box" onchange="onDistrictChange(this.value)"></select>
+          <div class="info-banner" id="districtQuickInfo"></div>
+        </div>
+
+        <div class="form-group" id="fg-rotation">
+          <div class="form-label"><span data-i18n="lblCurrentRot">2. Your Current Crop Rotation:</span></div>
+          <select id="currentRotationSelect" class="select-box" onchange="onCurrentRotationChange(this.value)"></select>
+        </div>
+
+        <div class="form-group" id="fg-area">
+          <div class="form-label">
+            <span data-i18n="lblArea">3. Cultivated Farm Area:</span>
+            <span class="val-tag"><span id="areaValDisplay">5.0</span> ha (<span id="areaAcresDisplay">12.4</span> ac)</span>
+          </div>
+          <input type="range" class="slider" id="areaSlider" min="0.5" max="100" step="0.5" value="5.0" oninput="onAreaChange(this.value)">
+          <div style="display:flex; gap:0.45rem; margin-top:0.4rem;">
+            <button class="btn" style="flex:1; padding:0.38rem; font-size:0.76rem; justify-content:center;" onclick="setAreaPreset(2.5)">2.5 ha</button>
+            <button class="btn" style="flex:1; padding:0.38rem; font-size:0.76rem; justify-content:center;" onclick="setAreaPreset(5.0)">5 ha</button>
+            <button class="btn" style="flex:1; padding:0.38rem; font-size:0.76rem; justify-content:center;" onclick="setAreaPreset(12.5)">12.5 ha</button>
+            <button class="btn" style="flex:1; padding:0.38rem; font-size:0.76rem; justify-content:center;" onclick="setAreaPreset(25.0)">25 ha</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="fg-water">
+          <div class="form-label"><span data-i18n="lblWater">4. Water Supply Source:</span></div>
+          <div class="bento-options">
+            <div class="opt-btn active" data-water="canal" onclick="setWaterSource('canal', this)"><span>🌊</span><span data-i18n="wCanal">Canal Water</span></div>
+            <div class="opt-btn" data-water="tubewell" onclick="setWaterSource('tubewell', this)"><span>⚡</span><span data-i18n="wTubewell">Tube-Well</span></div>
+            <div class="opt-btn" data-water="saline" onclick="setWaterSource('saline', this)"><span>🧂</span><span data-i18n="wSaline">Saline / Brackish</span></div>
+            <div class="opt-btn" data-water="rainfed" onclick="setWaterSource('rainfed', this)"><span>🌧️</span><span data-i18n="wRainfed">Rain-fed (Barani)</span></div>
+          </div>
+        </div>
+
+        <div class="form-group" id="fg-priority">
+          <div class="form-label"><span data-i18n="lblPriority">5. Primary Farming Goal:</span></div>
+          <div class="bento-options">
+            <div class="opt-btn active" data-pri="water" onclick="setPriority('water', this)"><span>💧</span><span data-i18n="pWater">Save Water</span></div>
+            <div class="opt-btn" data-pri="soil" onclick="setPriority('soil', this)"><span>🌱</span><span data-i18n="pSoil">Improve Soil</span></div>
+            <div class="opt-btn" data-pri="yield" onclick="setPriority('yield', this)"><span>🌾</span><span data-i18n="pYield">Higher Yield</span></div>
+            <div class="opt-btn" data-pri="stable" onclick="setPriority('stable', this)"><span>⚖️</span><span data-i18n="pStable">Lower Risk</span></div>
+          </div>
+        </div>
+
+        <div class="form-group" id="fg-scenario" style="margin-bottom:0;">
+          <div class="form-label"><span data-i18n="lblScenario">6. Weather Condition:</span></div>
+          <div class="bento-options">
+            <div class="opt-btn active" data-scenario="normal" onclick="setScenario('normal', this)"><span>🌿</span><span data-i18n="sNormal">Normal (2024–25)</span></div>
+            <div class="opt-btn orange" data-scenario="heat" onclick="setScenario('heat', this)"><span>🔥</span><span data-i18n="sHeat">Heat Stress</span></div>
+            <div class="opt-btn orange" data-scenario="drought" onclick="setScenario('drought', this)"><span>🏜️</span><span data-i18n="sDrought">Low Rainfall</span></div>
+            <div class="opt-btn" data-scenario="flash" onclick="setScenario('flash', this)"><span>🌊</span><span data-i18n="sFlash">Heavy Rain</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT WORKSPACE (DEFAULT: ENLARGED PUNJAB MAP ALONGSIDE INPUT PANEL) -->
+    <section class="center-stage">
+
+      <!-- SEPARATE STEP-BY-STEP INTERACTIVE TUTORIAL DOCK (ONLY SHOWN WHEN USER STARTS TUTORIAL) -->
+      <div class="tutorial-dock hidden" id="stepTutorialDock">
+        <div style="flex:1; min-width: 260px;">
+          <span class="tutor-badge" id="tourBadge">STEP-BY-STEP TUTORIAL · STEP 1 OF 6</span>
+          <p class="tutor-msg" id="tourDesc"></p>
+        </div>
+        <div class="tutor-controls">
+          <button class="btn" onclick="prevTourStep()" id="btnTourPrev">← Prev</button>
+          <button class="btn btn-primary" onclick="nextTourStep()" id="btnTourNext">Next Step →</button>
+          <button class="btn" onclick="closeTutorial()" id="btnTourClose" title="Close Tutorial">✕</button>
+        </div>
+      </div>
+
+      <!-- VIEW 1 (DEFAULT PRIMARY VIEW): ENLARGED INTERACTIVE PUNJAB PROVINCE MAP -->
+      <div class="view active" id="view-map">
+        <div class="card" id="mapMainCard">
+          <div class="card-header">
+            <span class="card-title" data-i18n="mapTitle">🗺️ Punjab Geospatial & Five-Rivers Satellite Map (36 Districts)</span>
+            <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+              <span class="card-badge" id="mapZoneBadge">Central Punjab</span>
+              <button class="btn btn-primary" style="padding:0.32rem 0.75rem; font-size:0.75rem;" onclick="setMode('rotation')" data-i18n="btnViewRotationsFromMap">🔄 View Recommended Rotations →</button>
+            </div>
+          </div>
+
+          <div class="punjab-map-layout">
+            <div class="punjab-svg-box">
+              <svg viewBox="0 0 400 420" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="punjabFill" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#132942"/>
+                    <stop offset="100%" stop-color="#0b1522"/>
+                  </linearGradient>
+                </defs>
+                <!-- Punjab Province Geographic Boundary -->
+                <path d="M 195 22 L 242 28 L 265 55 L 295 75 L 338 92 L 365 118 L 352 145 L 325 162 L 305 195 L 285 228 L 260 255 L 235 288 L 210 318 L 180 355 L 145 385 L 105 398 L 78 378 L 85 342 L 62 315 L 48 278 L 65 242 L 75 202 L 95 168 L 108 135 L 118 95 L 148 62 L 175 35 Z"
+                      fill="url(#punjabFill)" stroke="#10b981" stroke-width="2.2" stroke-linejoin="round"/>
+                
+                <!-- Five Rivers of Punjab (Indus, Jhelum, Chenab, Ravi, Sutlej) -->
+                <path d="M 118 95 Q 105 180 82 285 T 65 360" fill="none" stroke="#3b82f6" stroke-width="2" stroke-opacity="0.6" stroke-dasharray="3,2"/>
+                <path d="M 225 45 Q 195 120 165 190 T 120 290" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-opacity="0.55"/>
+                <path d="M 285 68 Q 245 140 195 205 T 115 305" fill="none" stroke="#3b82f6" stroke-width="2" stroke-opacity="0.65"/>
+                <path d="M 345 102 Q 290 155 235 200 T 155 275" fill="none" stroke="#3b82f6" stroke-width="1.7" stroke-opacity="0.55"/>
+                <path d="M 355 140 Q 295 195 230 245 T 125 320" fill="none" stroke="#3b82f6" stroke-width="1.8" stroke-opacity="0.55"/>
+
+                <g id="punjabDistrictPins"></g>
+              </svg>
+              <div style="font-size:0.75rem; color:var(--muted-foreground); margin-top:0.65rem;" data-i18n="mapClickHint">Click any district pin on the Punjab map to inspect its satellite telemetry or apply filters on the left</div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:0.85rem;">
+              <div class="metric-box" style="border-color: var(--primary); padding:0.95rem;">
+                <div class="label" data-i18n="mapSelectedLbl">Active Selected District</div>
+                <div class="val" id="mapActiveDistrict" style="font-size:1.55rem; color:var(--primary);">Lahore</div>
+                <div class="sub" id="mapCoords">31.5204° N, 74.3587° E</div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                <div class="metric-box">
+                  <div class="label" data-i18n="mapRainLabel">Annual Rainfall</div>
+                  <div class="val" id="mapRainVal">401.7 mm</div>
+                </div>
+                <div class="metric-box">
+                  <div class="label" data-i18n="mapSoilLabel">SMAP Wetness</div>
+                  <div class="val" id="mapWetnessVal" style="color:var(--accent);">0.345</div>
+                </div>
+                <div class="metric-box">
+                  <div class="label" data-i18n="mapTempLabel">Mean Temp</div>
+                  <div class="val" id="mapTempVal" style="color:var(--secondary);">23.1°C</div>
+                </div>
+                <div class="metric-box">
+                  <div class="label" data-i18n="mapSolarLabel">Solar Radiation</div>
+                  <div class="val" id="mapSolarVal">17.99 MJ</div>
+                </div>
+              </div>
+              <div class="card" style="background:#070a0f; padding:0.95rem; flex:1; display:flex; flex-direction:column;">
+                <div style="font-size:0.8rem; font-weight:700; color:#fff; margin-bottom:0.5rem;" data-i18n="mapQuickJump">Quick District Selector (All 36):</div>
+                <div id="mapDistrictQuickList" style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns:1fr 1fr; gap:0.35rem;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: CROP ROTATION STRATEGY (COMPACT ALL-IN-VIEW 7 CARDS WITHOUT SCROLLING) -->
+      <div class="view" id="view-rotation">
+        <div class="hero-rotation-bento" id="rotationHeroCard">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="flex: 1; min-width: 220px;">
+              <span class="pill-tag" data-i18n="bestMatchBadge">🏆 Top Recommended Crop Rotation</span>
+              <h2 id="heroRotName" style="font-family:var(--font-heading); font-size:1.35rem; font-weight:700; color: #fff;">Maize–Chickpea</h2>
+              <p id="heroRotDesc" style="color: var(--muted-foreground); font-size: 0.82rem; margin-top: 0.2rem;"></p>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.85rem;">
+              <button class="btn" style="font-size:0.76rem;" onclick="setMode('map')" data-i18n="btnBackToMap">🗺️ Back to Map</button>
+              <div style="text-align: end;">
+                <div style="font-size: 0.68rem; color: var(--muted-foreground);" data-i18n="scoreLabel">Match Score (/100)</div>
+                <div id="heroRotScore" class="rot-score score-badge-green" style="font-size: 1.65rem; display:inline-block; margin-top:0.15rem;">94 / 100</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bento-metrics-grid">
+            <div class="metric-box">
+              <div class="label" data-i18n="mWaterSaved">Water Difference vs Current</div>
+              <div class="val" style="color: var(--primary);" id="heroWaterSaved">-860 mm</div>
+              <div class="sub" id="heroWaterVol">43,000 m³</div>
+            </div>
+            <div class="metric-box">
+              <div class="label" data-i18n="mNFix">Biological Nitrogen Fixation</div>
+              <div class="val" style="color: var(--primary);" id="heroNFix">+50 kg N/ha</div>
+              <div class="sub" data-i18n="mNFixSub">Natural soil enrichment</div>
+            </div>
+            <div class="metric-box">
+              <div class="label" data-i18n="mSoilIdx">Soil Health Index</div>
+              <div class="val" style="color: var(--accent);" id="heroSoilIdx">88 / 100</div>
+              <div class="sub" data-i18n="mSoilSub">Organic carbon & structure</div>
+            </div>
+            <div class="metric-box">
+              <div class="label" data-i18n="mStabIdx">Yield Stability Index</div>
+              <div class="val" style="color: #fff;" id="heroStabIdx">86 / 100</div>
+              <div class="sub" data-i18n="mStabSub">Weather resilience</div>
+            </div>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--muted-foreground); margin-top: 0.75rem; padding-top:0.65rem; border-top:1px solid rgba(255,255,255,0.07);" id="tradeoffAnalysisText"></div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; flex-wrap:wrap; gap:0.5rem;">
+          <h3 style="font-family:var(--font-heading); font-size:0.95rem; font-weight:700; color: #fff;" data-i18n="allRotHeading">All 7 Crop Rotations — Compact Side-by-Side Comparison</h3>
+          <div style="display:flex; gap:0.4rem; font-size:0.68rem;">
+            <span class="score-badge-green" style="padding:0.12rem 0.45rem; border-radius:4px;">80–100 Optimal</span>
+            <span class="score-badge-amber" style="padding:0.12rem 0.45rem; border-radius:4px;">60–79 Moderate</span>
+            <span class="score-badge-red" style="padding:0.12rem 0.45rem; border-radius:4px;">&lt;60 High Risk</span>
+          </div>
+        </div>
+        <div class="rotations-bento-cards" id="allRotationsContainer"></div>
+      </div>
+
+      <!-- VIEW 3: VISUALIZED SOW & HARVEST GANTT CALENDAR -->
+      <div class="view" id="view-phenology">
+        <div class="card" id="phenologyMainCard">
+          <div class="card-header">
+            <span class="card-title" data-i18n="phenoTitle">📅 Visualized Crop Sowing, Growth & Harvest Calendar</span>
+            <span class="card-badge">12-Month Gantt Matrix</span>
+          </div>
+          <div class="gantt-legend">
+            <span class="legend-pill"><span class="legend-dot" style="background:var(--primary);"></span> <span data-i18n="legSow">Sowing Window</span></span>
+            <span class="legend-pill"><span class="legend-dot" style="background:rgba(59,130,246,0.45); border:1px solid var(--accent);"></span> <span data-i18n="legGrow">Crop Growth & Irrigation</span></span>
+            <span class="legend-pill"><span class="legend-dot" style="background:var(--secondary);"></span> <span data-i18n="legHarv">Harvesting Window</span></span>
+          </div>
+          <div class="table-wrap">
+            <table class="pheno-grid-table">
+              <thead>
+                <tr id="phenoHeadRow"></tr>
+              </thead>
+              <tbody id="phenologyTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 4: DISTRICT YIELDS & COST CALCULATOR -->
+      <div class="view" id="view-yields">
+        <div class="card" id="yieldsMainCard" style="margin-bottom:1.35rem;">
+          <div class="card-header">
+            <span class="card-title" id="yieldsCardTitle">🌾 Verified District Crop Yields (2024–25)</span>
+            <span class="card-badge">Punjab Crop Reporting Service</span>
+          </div>
+          <p style="font-size: 0.84rem; color: var(--muted-foreground); margin-bottom: 1.1rem;" id="yieldsSubtitle"></p>
+          <div class="bento-metrics-grid" id="districtCropCards"></div>
+        </div>
+
+        <div class="card" id="calculatorCard">
+          <div class="card-header">
+            <span class="card-title" data-i18n="calcTitle">🧮 Farm Cost & Profit Margin Calculator (PKR)</span>
+            <span class="card-badge">Live Financial Model</span>
+          </div>
+          <div class="calc-grid">
+            <div class="form-group">
+              <div class="form-label"><span data-i18n="calcInputCost">Total Input Cost (PKR per ha):</span></div>
+              <input type="number" id="inputCostPerHa" class="calculator-input" value="75000" oninput="calculateFinancials()">
+            </div>
+            <div class="form-group">
+              <div class="form-label"><span data-i18n="calcMarketPrice">Market Selling Price (PKR / 40kg):</span></div>
+              <input type="number" id="marketPricePerMaund" class="calculator-input" value="3800" oninput="calculateFinancials()">
+            </div>
+          </div>
+          <div class="bento-metrics-grid" style="margin-top:1rem;">
+            <div class="metric-box">
+              <div class="label" data-i18n="calcTotalCost">Total Farm Investment</div>
+              <div class="val" id="resTotalCost" style="color:var(--danger);">PKR 375,000</div>
+              <div class="sub" id="resAreaSub">For 5.0 ha</div>
+            </div>
+            <div class="metric-box">
+              <div class="label" data-i18n="calcGrossRev">Estimated Gross Revenue</div>
+              <div class="val" id="resGrossRev" style="color:var(--primary);">PKR 650,000</div>
+              <div class="sub" id="resYieldSub">Est. maunds output</div>
+            </div>
+            <div class="metric-box">
+              <div class="label" data-i18n="calcNetProfit">Net Profit Margin</div>
+              <div class="val" id="resNetProfit" style="color:var(--accent);">PKR 275,000</div>
+              <div class="sub" id="resMarginPct">42.3% Return</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 5: SOIL & SATELLITE LABS -->
+      <div class="view" id="view-soil">
+        <div class="card" id="soilMainCard">
+          <div class="card-header">
+            <span class="card-title" data-i18n="soilLabTitle">🧪 District Soil Profile & NASA Satellite Measurements</span>
+            <span class="card-badge" id="soilDistrictTag">Lahore</span>
+          </div>
+          <div class="soil-bento-grid">
+            <div class="card" style="background: #070a0f; margin:0;">
+              <div class="card-header">
+                <span class="card-title" style="color: var(--secondary);" data-i18n="soilTexTitle">Soil Texture (Clay / Sand / Silt)</span>
+              </div>
+              <div class="segmented-bar">
+                <div class="seg-item bg-clay" id="segClay" style="width: 30%;">30%</div>
+                <div class="seg-item bg-sand" id="segSand" style="width: 34%;">34%</div>
+                <div class="seg-item bg-silt" id="segSilt" style="width: 36%;">36%</div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted-foreground); flex-wrap: wrap; gap: 0.4rem;">
+                <span style="color: #f97316;"><span data-i18n="lblClay">Clay</span>: <b class="val" id="soilClayVal">29.9%</b></span>
+                <span style="color: #facc15;"><span data-i18n="lblSand">Sand</span>: <b class="val" id="soilSandVal">33.8%</b></span>
+                <span style="color: #38bdf8;"><span data-i18n="lblSilt">Silt</span>: <b class="val" id="soilSiltVal">36.2%</b></span>
+              </div>
+            </div>
+
+            <div class="card" style="background: #070a0f; margin:0;">
+              <div class="card-header">
+                <span class="card-title" style="color: var(--accent);" data-i18n="soilPhTitle">Soil pH Level</span>
+                <span class="card-badge" id="soilPhVal">8.0 pH</span>
+              </div>
+              <div style="position: relative; height: 14px; border-radius: 7px; background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981, #06b6d4, #8b5cf6); margin: 1.1rem 0; direction: ltr;">
+                <div id="phNeedle" style="position: absolute; top: -5px; width: 4px; height: 24px; background: #fff; border-radius: 2px; left: 75%;"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted-foreground);" dir="ltr">
+                <span>5.0 (Acidic)</span><span>7.0 (Neutral)</span><span>9.0 (Alkaline)</span>
+              </div>
+            </div>
+
+            <div class="card" style="background: #070a0f; margin:0;">
+              <div class="card-header">
+                <span class="card-title" style="color: var(--primary);" data-i18n="soilOcTitle">Soil Organic Carbon (OC %)</span>
+                <span class="card-badge" id="soilOcVal">0.58%</span>
+              </div>
+              <div style="background: var(--muted); height: 10px; border-radius: 5px; overflow: hidden; margin: 1.1rem 0; direction: ltr;">
+                <div id="ocBarFill" style="height: 100%; background: var(--primary); width: 58%;"></div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--muted-foreground);" id="soilOcDesc"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 6: CUSTOM DATASET UPLOAD & 36 DISTRICTS TABLE -->
+      <div class="view" id="view-data">
+        <div class="card" id="dataMainCard" style="margin-bottom:1.35rem;">
+          <div class="card-header">
+            <span class="card-title" data-i18n="uploadTitle">📂 Upload Custom Farmer Dataset (CSV / JSON)</span>
+            <span class="card-badge">Benchmark</span>
+          </div>
+          <input type="file" id="customDatasetInput" class="file-upload-input" accept=".csv,.json" onchange="handleCustomDatasetUpload(event)">
+          <div id="customUploadStatus" style="font-size: 0.8rem; color: var(--primary); margin-top: 0.5rem;"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title" data-i18n="allDataTitle">📂 Verified Provincial & NASA Satellite Dataset (36 Districts)</span>
+            <button class="btn" onclick="exportDataCSV()" data-i18n="btnDownloadCsv">📥 Download CSV</button>
+          </div>
+          <div class="table-wrap" style="max-height: 540px;">
+            <table class="flat-table">
+              <thead id="openDataHead"></thead>
+              <tbody id="openDataTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FIXED BOTTOM TELEMETRY BAR AT THE BASE OF THE WEBSITE -->
+  <footer class="bottom-telemetry-bar" id="bottomTelemetryBar">
+    <div class="telemetry-group">
+      <div class="telemetry-item"><span class="status-dot"></span><span data-i18n="botDistrict">DISTRICT:</span> <span class="val" id="botDistrictVal">Lahore (PK-PB-17)</span></div>
+      <div class="telemetry-item"><span data-i18n="botRain">NASA RAIN:</span> <span class="val" id="botRainVal">401.7 mm</span></div>
+      <div class="telemetry-item"><span data-i18n="botTemp">TEMP:</span> <span class="val" id="botTempVal">23.1°C (16.3°–29.8°C)</span></div>
+    </div>
+    <div class="telemetry-group">
+      <div class="telemetry-item"><span class="status-dot" style="background:var(--accent)"></span><span>NASA SMAP WETNESS:</span> <span class="val" id="botWetnessVal">0.345</span></div>
+      <div class="telemetry-item"><span>SOLAR:</span> <span class="val" id="botSolarVal">17.99 MJ/m²</span></div>
+      <div class="telemetry-item"><span>COORDS:</span> <span class="val" id="botCoordsVal">31.52°N, 74.36°E</span></div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+const DATA = {
+  "Attock": { "id": "PK-PB-01", "soil": { "clay": 32.4, "sand": 45.1, "silt": 22.5, "oc": 0.39, "ph": 7.93 }, "weather": { "max_temp": 28.2, "min_temp": 14.5, "mean_temp": 21.4, "rain": 815.2, "solar": 18.07, "wetness": 0.366 }, "crops": { "wheat": { "yield": 4.67 }, "rice": { "yield": 2.49 }, "maize": { "yield": 6.69 }, "mung_bean": { "yield": 1.0 }, "chickpea": { "yield": 1.17 } }, "lat": 33.7667, "lng": 72.3667 },
+  "Bahawalnagar": { "id": "PK-PB-02", "soil": { "clay": 18.2, "sand": 61.5, "silt": 20.3, "oc": 0.24, "ph": 8.43 }, "weather": { "max_temp": 31.2, "min_temp": 17.6, "mean_temp": 24.4, "rain": 776.5, "solar": 17.89, "wetness": 0.361 }, "crops": { "wheat": { "yield": 4.33 }, "rice": { "yield": 2.81 }, "maize": { "yield": 4.16 }, "mung_bean": { "yield": 1.3 }, "chickpea": { "yield": 0.87 } }, "lat": 29.9983, "lng": 73.2525 },
+  "Bahawalpur": { "id": "PK-PB-03", "soil": { "clay": 14.7, "sand": 67.6, "silt": 17.7, "oc": 0.21, "ph": 8.6 }, "weather": { "max_temp": 31.6, "min_temp": 18.1, "mean_temp": 24.9, "rain": 513.4, "solar": 17.98, "wetness": 0.344 }, "crops": { "wheat": { "yield": 3.83 }, "rice": { "yield": 3.88 }, "maize": { "yield": 5.89 }, "mung_bean": { "yield": 0.99 }, "chickpea": { "yield": 1.34 } }, "lat": 29.3956, "lng": 71.6722 },
+  "Bhakkar": { "id": "PK-PB-04", "soil": { "clay": 16.4, "sand": 64.3, "silt": 19.4, "oc": 0.22, "ph": 8.43 }, "weather": { "max_temp": 29.9, "min_temp": 16.4, "mean_temp": 23.1, "rain": 842.0, "solar": 18.07, "wetness": 0.358 }, "crops": { "wheat": { "yield": 3.59 }, "rice": { "yield": 2.81 }, "maize": { "yield": 5.99 }, "mung_bean": { "yield": 1.67 }, "chickpea": { "yield": 1.13 } }, "lat": 31.6253, "lng": 71.0653 },
+  "Chakwal": { "id": "PK-PB-05", "soil": { "clay": 27.7, "sand": 47.6, "silt": 24.7, "oc": 0.37, "ph": 7.8 }, "weather": { "max_temp": 28.6, "min_temp": 15.2, "mean_temp": 21.9, "rain": 540.5, "solar": 17.97, "wetness": 0.357 }, "crops": { "wheat": { "yield": 3.43 }, "rice": { "yield": 4.03 }, "maize": { "yield": 4.96 }, "mung_bean": { "yield": 1.4 }, "chickpea": { "yield": 1.04 } }, "lat": 32.9328, "lng": 72.8558 },
+  "Chiniot": { "id": "PK-PB-06", "soil": { "clay": 26.2, "sand": 42.1, "silt": 31.7, "oc": 0.43, "ph": 8.13 }, "weather": { "max_temp": 29.7, "min_temp": 16.2, "mean_temp": 22.9, "rain": 546.7, "solar": 18.0, "wetness": 0.356 }, "crops": { "wheat": { "yield": 2.66 }, "rice": { "yield": 4.02 }, "maize": { "yield": 7.33 }, "mung_bean": { "yield": 1.06 }, "chickpea": { "yield": 1.18 } }, "lat": 31.72, "lng": 72.98 },
+  "Dera Ghazi Khan": { "id": "PK-PB-07", "soil": { "clay": 22.0, "sand": 52.5, "silt": 25.6, "oc": 0.29, "ph": 8.27 }, "weather": { "max_temp": 31.0, "min_temp": 17.6, "mean_temp": 24.3, "rain": 577.5, "solar": 18.01, "wetness": 0.346 }, "crops": { "wheat": { "yield": 4.89 }, "rice": { "yield": 2.15 }, "maize": { "yield": 6.74 }, "mung_bean": { "yield": 1.45 }, "chickpea": { "yield": 0.91 } }, "lat": 30.0561, "lng": 70.6348 },
+  "Faisalabad": { "id": "PK-PB-08", "soil": { "clay": 29.5, "sand": 34.9, "silt": 35.6, "oc": 0.55, "ph": 7.97 }, "weather": { "max_temp": 29.9, "min_temp": 16.6, "mean_temp": 23.3, "rain": 602.7, "solar": 17.97, "wetness": 0.365 }, "crops": { "wheat": { "yield": 3.43 }, "rice": { "yield": 3.59 }, "maize": { "yield": 4.25 }, "mung_bean": { "yield": 1.4 }, "chickpea": { "yield": 0.94 } }, "lat": 31.4187, "lng": 73.0791 },
+  "Gujranwala": { "id": "PK-PB-09", "soil": { "clay": 33.7, "sand": 30.1, "silt": 36.3, "oc": 0.67, "ph": 7.9 }, "weather": { "max_temp": 29.4, "min_temp": 15.8, "mean_temp": 22.6, "rain": 576.8, "solar": 17.9, "wetness": 0.353 }, "crops": { "wheat": { "yield": 4.1 }, "rice": { "yield": 3.34 }, "maize": { "yield": 5.94 }, "mung_bean": { "yield": 1.16 }, "chickpea": { "yield": 1.33 } }, "lat": 32.1617, "lng": 74.1883 },
+  "Gujrat": { "id": "PK-PB-10", "soil": { "clay": 31.1, "sand": 36.3, "silt": 32.6, "oc": 0.6, "ph": 7.7 }, "weather": { "max_temp": 28.9, "min_temp": 15.5, "mean_temp": 22.2, "rain": 654.4, "solar": 18.06, "wetness": 0.354 }, "crops": { "wheat": { "yield": 4.95 }, "rice": { "yield": 3.85 }, "maize": { "yield": 7.13 }, "mung_bean": { "yield": 1.21 }, "chickpea": { "yield": 0.96 } }, "lat": 32.5742, "lng": 74.0754 },
+  "Hafizabad": { "id": "PK-PB-11", "soil": { "clay": 32.4, "sand": 32.2, "silt": 35.4, "oc": 0.58, "ph": 7.97 }, "weather": { "max_temp": 29.7, "min_temp": 16.3, "mean_temp": 22.9, "rain": 548.1, "solar": 17.95, "wetness": 0.352 }, "crops": { "wheat": { "yield": 3.96 }, "rice": { "yield": 4.16 }, "maize": { "yield": 4.92 }, "mung_bean": { "yield": 1.49 }, "chickpea": { "yield": 1.18 } }, "lat": 32.0711, "lng": 73.6878 },
+  "Jhang": { "id": "PK-PB-12", "soil": { "clay": 23.6, "sand": 48.4, "silt": 28.0, "oc": 0.39, "ph": 8.2 }, "weather": { "max_temp": 30.1, "min_temp": 16.5, "mean_temp": 23.3, "rain": 641.4, "solar": 18.06, "wetness": 0.35 }, "crops": { "wheat": { "yield": 3.63 }, "rice": { "yield": 4.04 }, "maize": { "yield": 7.62 }, "mung_bean": { "yield": 0.99 }, "chickpea": { "yield": 1.4 } }, "lat": 31.2681, "lng": 72.3181 },
+  "Jhelum": { "id": "PK-PB-13", "soil": { "clay": 27.0, "sand": 50.4, "silt": 22.6, "oc": 0.42, "ph": 7.67 }, "weather": { "max_temp": 28.7, "min_temp": 15.4, "mean_temp": 22.0, "rain": 597.3, "solar": 17.86, "wetness": 0.356 }, "crops": { "wheat": { "yield": 4.54 }, "rice": { "yield": 3.34 }, "maize": { "yield": 5.8 }, "mung_bean": { "yield": 1.16 }, "chickpea": { "yield": 1.09 } }, "lat": 32.9425, "lng": 73.7256 },
+  "Kasur": { "id": "PK-PB-14", "soil": { "clay": 29.5, "sand": 38.5, "silt": 32.0, "oc": 0.51, "ph": 8.13 }, "weather": { "max_temp": 30.5, "min_temp": 16.9, "mean_temp": 23.6, "rain": 567.4, "solar": 17.98, "wetness": 0.359 }, "crops": { "wheat": { "yield": 4.16 }, "rice": { "yield": 2.22 }, "maize": { "yield": 5.49 }, "mung_bean": { "yield": 0.92 }, "chickpea": { "yield": 1.13 } }, "lat": 31.1167, "lng": 74.45 },
+  "Khanewal": { "id": "PK-PB-15", "soil": { "clay": 27.9, "sand": 40.3, "silt": 31.8, "oc": 0.46, "ph": 8.23 }, "weather": { "max_temp": 31.0, "min_temp": 17.4, "mean_temp": 24.2, "rain": 573.0, "solar": 17.82, "wetness": 0.345 }, "crops": { "wheat": { "yield": 4.68 }, "rice": { "yield": 4.17 }, "maize": { "yield": 5.84 }, "mung_bean": { "yield": 0.83 }, "chickpea": { "yield": 1.16 } }, "lat": 30.3017, "lng": 71.9322 },
+  "Khushab": { "id": "PK-PB-16", "soil": { "clay": 21.9, "sand": 53.5, "silt": 24.7, "oc": 0.31, "ph": 8.3 }, "weather": { "max_temp": 29.3, "min_temp": 15.8, "mean_temp": 22.5, "rain": 550.1, "solar": 17.91, "wetness": 0.343 }, "crops": { "wheat": { "yield": 3.54 }, "rice": { "yield": 2.06 }, "maize": { "yield": 3.91 }, "mung_bean": { "yield": 1.12 }, "chickpea": { "yield": 0.72 } }, "lat": 32.2967, "lng": 72.3528 },
+  "Lahore": { "id": "PK-PB-17", "soil": { "clay": 29.9, "sand": 33.8, "silt": 36.2, "oc": 0.58, "ph": 8.0 }, "weather": { "max_temp": 29.8, "min_temp": 16.3, "mean_temp": 23.1, "rain": 401.7, "solar": 17.99, "wetness": 0.345 }, "crops": { "wheat": { "yield": 3.17 }, "rice": { "yield": 2.7 }, "maize": { "yield": 5.89 }, "mung_bean": { "yield": 1.04 }, "chickpea": { "yield": 0.82 } }, "lat": 31.5204, "lng": 74.3587 },
+  "Layyah": { "id": "PK-PB-18", "soil": { "clay": 17.0, "sand": 65.1, "silt": 17.9, "oc": 0.26, "ph": 8.43 }, "weather": { "max_temp": 30.5, "min_temp": 17.0, "mean_temp": 23.7, "rain": 539.8, "solar": 18.02, "wetness": 0.353 }, "crops": { "wheat": { "yield": 3.41 }, "rice": { "yield": 3.8 }, "maize": { "yield": 6.94 }, "mung_bean": { "yield": 0.99 }, "chickpea": { "yield": 1.45 } }, "lat": 30.9614, "lng": 70.9394 },
+  "Lodhran": { "id": "PK-PB-19", "soil": { "clay": 21.3, "sand": 52.7, "silt": 26.0, "oc": 0.31, "ph": 8.33 }, "weather": { "max_temp": 31.5, "min_temp": 18.1, "mean_temp": 24.8, "rain": 510.6, "solar": 18.02, "wetness": 0.348 }, "crops": { "wheat": { "yield": 3.84 }, "rice": { "yield": 2.64 }, "maize": { "yield": 7.54 }, "mung_bean": { "yield": 0.92 }, "chickpea": { "yield": 0.86 } }, "lat": 29.5408, "lng": 71.6336 },
+  "Mandi Bahauddin": { "id": "PK-PB-20", "soil": { "clay": 32.3, "sand": 31.1, "silt": 36.7, "oc": 0.63, "ph": 7.8 }, "weather": { "max_temp": 29.0, "min_temp": 15.5, "mean_temp": 22.3, "rain": 663.1, "solar": 18.02, "wetness": 0.363 }, "crops": { "wheat": { "yield": 4.24 }, "rice": { "yield": 2.1 }, "maize": { "yield": 6.56 }, "mung_bean": { "yield": 0.99 }, "chickpea": { "yield": 1.01 } }, "lat": 32.587, "lng": 73.4912 },
+  "Mianwali": { "id": "PK-PB-21", "soil": { "clay": 19.9, "sand": 58.0, "silt": 22.1, "oc": 0.29, "ph": 8.3 }, "weather": { "max_temp": 29.0, "min_temp": 15.6, "mean_temp": 22.3, "rain": 214.1, "solar": 18.07, "wetness": 0.332 }, "crops": { "wheat": { "yield": 2.91 }, "rice": { "yield": 2.39 }, "maize": { "yield": 6.31 }, "mung_bean": { "yield": 0.97 }, "chickpea": { "yield": 1.2 } }, "lat": 32.5853, "lng": 71.5436 },
+  "Multan": { "id": "PK-PB-22", "soil": { "clay": 27.7, "sand": 42.1, "silt": 30.3, "oc": 0.41, "ph": 8.27 }, "weather": { "max_temp": 31.2, "min_temp": 17.5, "mean_temp": 24.3, "rain": 395.7, "solar": 18.07, "wetness": 0.348 }, "crops": { "wheat": { "yield": 3.67 }, "rice": { "yield": 2.84 }, "maize": { "yield": 6.55 }, "mung_bean": { "yield": 1.57 }, "chickpea": { "yield": 0.82 } }, "lat": 30.1984, "lng": 71.4687 },
+  "Muzaffargarh": { "id": "PK-PB-23", "soil": { "clay": 20.1, "sand": 55.7, "silt": 24.2, "oc": 0.3, "ph": 8.33 }, "weather": { "max_temp": 31.1, "min_temp": 17.6, "mean_temp": 24.3, "rain": 642.8, "solar": 18.01, "wetness": 0.359 }, "crops": { "wheat": { "yield": 3.77 }, "rice": { "yield": 3.33 }, "maize": { "yield": 7.24 }, "mung_bean": { "yield": 0.8 }, "chickpea": { "yield": 0.93 } }, "lat": 30.0703, "lng": 71.1933 },
+  "Nankana Sahib": { "id": "PK-PB-24", "soil": { "clay": 31.7, "sand": 32.4, "silt": 35.9, "oc": 0.57, "ph": 7.97 }, "weather": { "max_temp": 30.0, "min_temp": 16.4, "mean_temp": 23.2, "rain": 542.9, "solar": 18.06, "wetness": 0.354 }, "crops": { "wheat": { "yield": 4.3 }, "rice": { "yield": 4.05 }, "maize": { "yield": 7.43 }, "mung_bean": { "yield": 0.99 }, "chickpea": { "yield": 0.79 } }, "lat": 31.45, "lng": 73.7 },
+  "Narowal": { "id": "PK-PB-25", "soil": { "clay": 35.1, "sand": 28.2, "silt": 36.7, "oc": 0.68, "ph": 7.7 }, "weather": { "max_temp": 29.4, "min_temp": 15.9, "mean_temp": 22.6, "rain": 690.0, "solar": 17.87, "wetness": 0.354 }, "crops": { "wheat": { "yield": 5.0 }, "rice": { "yield": 2.84 }, "maize": { "yield": 5.97 }, "mung_bean": { "yield": 1.44 }, "chickpea": { "yield": 0.81 } }, "lat": 32.1, "lng": 74.87 },
+  "Okara": { "id": "PK-PB-26", "soil": { "clay": 31.9, "sand": 31.8, "silt": 36.3, "oc": 0.58, "ph": 8.13 }, "weather": { "max_temp": 30.5, "min_temp": 17.0, "mean_temp": 23.8, "rain": 725.3, "solar": 18.04, "wetness": 0.35 }, "crops": { "wheat": { "yield": 2.61 }, "rice": { "yield": 2.74 }, "maize": { "yield": 5.78 }, "mung_bean": { "yield": 1.26 }, "chickpea": { "yield": 0.74 } }, "lat": 30.8081, "lng": 73.4458 },
+  "Pakpattan": { "id": "PK-PB-27", "soil": { "clay": 28.4, "sand": 40.3, "silt": 31.3, "oc": 0.5, "ph": 8.23 }, "weather": { "max_temp": 30.9, "min_temp": 17.4, "mean_temp": 24.2, "rain": 435.3, "solar": 18.1, "wetness": 0.336 }, "crops": { "wheat": { "yield": 3.59 }, "rice": { "yield": 2.79 }, "maize": { "yield": 5.68 }, "mung_bean": { "yield": 1.19 }, "chickpea": { "yield": 0.97 } }, "lat": 30.341, "lng": 73.3866 },
+  "Rahim Yar Khan": { "id": "PK-PB-28", "soil": { "clay": 15.9, "sand": 65.6, "silt": 18.4, "oc": 0.23, "ph": 8.6 }, "weather": { "max_temp": 32.5, "min_temp": 18.9, "mean_temp": 25.6, "rain": 699.7, "solar": 17.94, "wetness": 0.355 }, "crops": { "wheat": { "yield": 3.54 }, "rice": { "yield": 2.03 }, "maize": { "yield": 4.44 }, "mung_bean": { "yield": 0.9 }, "chickpea": { "yield": 1.06 } }, "lat": 28.4212, "lng": 70.2989 },
+  "Rajanpur": { "id": "PK-PB-29", "soil": { "clay": 18.4, "sand": 58.0, "silt": 23.6, "oc": 0.27, "ph": 8.47 }, "weather": { "max_temp": 32.0, "min_temp": 18.6, "mean_temp": 25.3, "rain": 527.2, "solar": 18.05, "wetness": 0.35 }, "crops": { "wheat": { "yield": 3.09 }, "rice": { "yield": 2.64 }, "maize": { "yield": 7.92 }, "mung_bean": { "yield": 1.02 }, "chickpea": { "yield": 0.95 } }, "lat": 29.1035, "lng": 70.325 },
+  "Rawalpindi": { "id": "PK-PB-30", "soil": { "clay": 29.0, "sand": 43.8, "silt": 27.2, "oc": 0.53, "ph": 7.6 }, "weather": { "max_temp": 28.4, "min_temp": 15.0, "mean_temp": 21.7, "rain": 374.7, "solar": 17.93, "wetness": 0.347 }, "crops": { "wheat": { "yield": 3.61 }, "rice": { "yield": 2.27 }, "maize": { "yield": 7.45 }, "mung_bean": { "yield": 1.34 }, "chickpea": { "yield": 0.83 } }, "lat": 33.5973, "lng": 73.0479 },
+  "Sahiwal": { "id": "PK-PB-31", "soil": { "clay": 32.4, "sand": 31.1, "silt": 36.5, "oc": 0.59, "ph": 8.0 }, "weather": { "max_temp": 30.4, "min_temp": 17.2, "mean_temp": 23.8, "rain": 623.1, "solar": 17.93, "wetness": 0.351 }, "crops": { "wheat": { "yield": 4.2 }, "rice": { "yield": 2.38 }, "maize": { "yield": 6.62 }, "mung_bean": { "yield": 1.25 }, "chickpea": { "yield": 1.28 } }, "lat": 30.6667, "lng": 73.1 },
+  "Sargodha": { "id": "PK-PB-32", "soil": { "clay": 30.4, "sand": 36.2, "silt": 33.4, "oc": 0.55, "ph": 8.0 }, "weather": { "max_temp": 29.5, "min_temp": 16.0, "mean_temp": 22.8, "rain": 455.9, "solar": 17.95, "wetness": 0.349 }, "crops": { "wheat": { "yield": 2.95 }, "rice": { "yield": 3.22 }, "maize": { "yield": 6.89 }, "mung_bean": { "yield": 0.96 }, "chickpea": { "yield": 1.04 } }, "lat": 32.0836, "lng": 72.6711 },
+  "Sheikhupura": { "id": "PK-PB-33", "soil": { "clay": 35.7, "sand": 26.4, "silt": 37.9, "oc": 0.65, "ph": 7.93 }, "weather": { "max_temp": 29.8, "min_temp": 16.3, "mean_temp": 23.0, "rain": 619.4, "solar": 17.9, "wetness": 0.352 }, "crops": { "wheat": { "yield": 3.92 }, "rice": { "yield": 2.87 }, "maize": { "yield": 6.08 }, "mung_bean": { "yield": 1.33 }, "chickpea": { "yield": 1.15 } }, "lat": 31.7131, "lng": 73.9783 },
+  "Sialkot": { "id": "PK-PB-34", "soil": { "clay": 35.0, "sand": 25.4, "silt": 39.6, "oc": 0.69, "ph": 7.63 }, "weather": { "max_temp": 29.1, "min_temp": 15.6, "mean_temp": 22.3, "rain": 641.3, "solar": 18.03, "wetness": 0.361 }, "crops": { "wheat": { "yield": 3.71 }, "rice": { "yield": 2.03 }, "maize": { "yield": 4.75 }, "mung_bean": { "yield": 1.47 }, "chickpea": { "yield": 1.28 } }, "lat": 32.4945, "lng": 74.5229 },
+  "Toba Tek Singh": { "id": "PK-PB-35", "soil": { "clay": 29.0, "sand": 37.6, "silt": 33.4, "oc": 0.52, "ph": 8.07 }, "weather": { "max_temp": 30.3, "min_temp": 16.9, "mean_temp": 23.6, "rain": 423.2, "solar": 17.94, "wetness": 0.354 }, "crops": { "wheat": { "yield": 2.95 }, "rice": { "yield": 3.56 }, "maize": { "yield": 5.94 }, "mung_bean": { "yield": 1.34 }, "chickpea": { "yield": 1.17 } }, "lat": 30.9744, "lng": 72.4828 },
+  "Vehari": { "id": "PK-PB-36", "soil": { "clay": 27.0, "sand": 44.4, "silt": 28.6, "oc": 0.39, "ph": 8.27 }, "weather": { "max_temp": 31.0, "min_temp": 17.6, "mean_temp": 24.3, "rain": 683.2, "solar": 18.01, "wetness": 0.364 }, "crops": { "wheat": { "yield": 4.31 }, "rice": { "yield": 3.46 }, "maize": { "yield": 7.09 }, "mung_bean": { "yield": 0.8 }, "chickpea": { "yield": 0.85 } }, "lat": 30.0419, "lng": 72.3489 }
+};
+
+const DISTRICT_URDU = {
+  "Attock": "اٹک", "Bahawalnagar": "بہاولنگر", "Bahawalpur": "بہاولپور", "Bhakkar": "بھکر",
+  "Chakwal": "چکوال", "Chiniot": "چنیوٹ", "Dera Ghazi Khan": "ڈیرہ غازی خان", "Faisalabad": "فیصل آباد",
+  "Gujranwala": "گوجرانوالہ", "Gujrat": "گجرات", "Hafizabad": "حافظ آباد", "Jhang": "جھنگ",
+  "Jhelum": "جہلم", "Kasur": "قصور", "Khanewal": "خانیوال", "Khushab": "خوشاب",
+  "Lahore": "لاہور", "Layyah": "لیہ", "Lodhran": "لودھراں", "Mandi Bahauddin": "منڈی بہاؤالدین",
+  "Mianwali": "میانوالی", "Multan": "ملتان", "Muzaffargarh": "مظفرگڑھ", "Nankana Sahib": "ننکانہ صاحب",
+  "Narowal": "نارووال", "Okara": "اوکاڑہ", "Pakpattan": "پاکپتن", "Rahim Yar Khan": "رحیم یار خان",
+  "Rajanpur": "راجن پور", "Rawalpindi": "راولپنڈی", "Sahiwal": "ساہیوال", "Sargodha": "سرگودھا",
+  "Sheikhupura": "شیخوپورہ", "Sialkot": "سیالکوٹ", "Toba Tek Singh": "ٹوبہ ٹیک سنگھ", "Vehari": "وہاڑی"
+};
+
+const ROTATIONS = [
+  { id: "rice_wheat", nameEn: "Rice–Wheat", nameUr: "چاول – گندم", tagEn: "Traditional", tagUr: "روایتی", crops: ["Rice", "Wheat"], water: 1490, soilHealth: 42, stability: 68, nitrogenFixation: 0, descEn: "High grain yield; demands ~1,490 mm water.", descUr: "زیادہ پیداوار مگر ~1,490 ملی میٹر پانی درکار۔" },
+  { id: "maize_wheat", nameEn: "Maize–Wheat", nameUr: "مکئی – گندم", tagEn: "Water-Saving", tagUr: "پانی کی بچت", crops: ["Maize", "Wheat"], water: 870, soilHealth: 58, stability: 82, nitrogenFixation: 0, descEn: "Saves 620 mm water vs Rice–Wheat.", descUr: "چاول–گندم کے مقابلے 620 ملی میٹر پانی بچاتا ہے۔" },
+  { id: "rice_chickpea", nameEn: "Rice–Chickpea", nameUr: "چاول – چنا", tagEn: "Winter Legume", tagUr: "سردیوں کی پھلی", crops: ["Rice", "Chickpea"], water: 1250, soilHealth: 78, stability: 75, nitrogenFixation: 45, descEn: "Drought-hardy winter chickpea (+45 kg N).", descUr: "گندم کی جگہ کم پانی والا چنا (+45 کلو نائٹروجن)۔" },
+  { id: "maize_chickpea", nameEn: "Maize–Chickpea", nameUr: "مکئی – چنا", tagEn: "Low-Water", tagUr: "کم پانی", crops: ["Maize", "Chickpea"], water: 630, soilHealth: 88, stability: 86, nitrogenFixation: 50, descEn: "Lowest water demand (~630 mm) +50 kg N/ha.", descUr: "کم ترین پانی (~630 ملی میٹر) اور +50 کلو نائٹروجن۔" },
+  { id: "rice_wheat_mung", nameEn: "Rice–Wheat–Mung", nameUr: "چاول – گندم – مونگ", tagEn: "3-Crop Catch", tagUr: "تین فصلی چکر", crops: ["Rice", "Wheat", "Mung Bean"], water: 1690, soilHealth: 91, stability: 84, nitrogenFixation: 65, descEn: "Adds 75-day summer Mung (+65 kg N/ha).", descUr: "گرمیوں کی 75 روزہ مونگ شامل (+65 کلو نائٹروجن)۔" },
+  { id: "chickpea_maize_mung", nameEn: "Chickpea–Maize–Mung", nameUr: "چنا – مکئی – مونگ", tagEn: "Soil Builder", tagUr: "زمین کی بحالی", crops: ["Chickpea", "Maize", "Mung Bean"], water: 830, soilHealth: 96, stability: 89, nitrogenFixation: 95, descEn: "Dual legumes restore carbon (+95 kg N/ha).", descUr: "دو پھلی دار فصلیں کاربن بحال کرتی ہیں (+95 N)۔" },
+  { id: "cotton_wheat", nameEn: "Cotton–Wheat", nameUr: "کپاس – گندم", tagEn: "Cash-Crop", tagUr: "نقد آور فصل", crops: ["Cotton", "Wheat"], water: 1140, soilHealth: 54, stability: 72, nitrogenFixation: 0, descEn: "Warm southern Punjab cash-crop (~1,140 mm).", descUr: "جنوبی پنجاب کا نقد آور نظام (~1,140 ملی میٹر)۔" }
+];
+
+const PHENOLOGY = [
+  { nameEn: "Rice", nameUr: "چاول", seasonEn: "Kharif", seasonUr: "خریف", plantStart: 5, plantEnd: 6, harvestStart: 9, harvestEnd: 10, duration: 125 },
+  { nameEn: "Wheat", nameUr: "گندم", seasonEn: "Rabi", seasonUr: "ربیع", plantStart: 10, plantEnd: 11, harvestStart: 3, harvestEnd: 4, duration: 145 },
+  { nameEn: "Maize", nameUr: "مکئی", seasonEn: "Spring/Kharif", seasonUr: "بہاریہ/خریف", plantStart: 2, plantEnd: 3, harvestStart: 6, harvestEnd: 7, duration: 105 },
+  { nameEn: "Chickpea", nameUr: "چنا", seasonEn: "Rabi", seasonUr: "ربیع", plantStart: 9, plantEnd: 10, harvestStart: 2, harvestEnd: 3, duration: 160 },
+  { nameEn: "Mung Bean", nameUr: "مونگ", seasonEn: "Zaid/Summer", seasonUr: "گرما/زید", plantStart: 4, plantEnd: 5, harvestStart: 6, harvestEnd: 7, duration: 75 },
+  { nameEn: "Cotton", nameUr: "کپاس", seasonEn: "Kharif", seasonUr: "خریف", plantStart: 4, plantEnd: 5, harvestStart: 9, harvestEnd: 11, duration: 165 }
+];
+
+/* BEGINNING GUIDE DESTINATION CARDS (SEPARATE INTRO PORTAL) */
+const INTRO_DESTINATIONS = {
+  en: [
+    {
+      primary: true,
+      badge: "Recommended Starting Point",
+      svg: `<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>`,
+      title: "Explore Punjab Map & Farm Inputs",
+      desc: "Open the enlarged 36-District Punjab Geospatial Map directly beside your enlarged Farmer Input Panel. Apply water, soil, and weather filters to watch recommendations update live.",
+      cta: "Enter Map & Workspace →",
+      mode: "map"
+    },
+    {
+      primary: false,
+      badge: "Decision Engine",
+      svg: `<svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+      title: "Crop Rotation Strategy (All 7)",
+      desc: "View all 7 crop rotation systems side-by-side at once without scrolling—scored out of 100 for water savings, nitrogen fixation, and climate resilience.",
+      cta: "Go to Crop Rotations →",
+      mode: "rotation"
+    },
+    {
+      primary: false,
+      badge: "12-Month Schedule",
+      svg: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+      title: "Sow & Harvest Calendar",
+      desc: "Inspect the visual 12-month Gantt timeline mapping exact sowing windows, irrigation growth phases, and harvest months across Kharif and Rabi crops.",
+      cta: "Go to Calendar →",
+      mode: "phenology"
+    },
+    {
+      primary: false,
+      badge: "Financials & Harvest",
+      svg: `<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+      title: "District Yields & Profit Calculator",
+      desc: "Check 2024–25 provincial harvest averages for your farm size and compute net profit margins in Pakistani Rupees (PKR).",
+      cta: "Go to Yields & Profit →",
+      mode: "yields"
+    },
+    {
+      primary: false,
+      badge: "NASA SMAP & Soil",
+      svg: `<svg viewBox="0 0 24 24"><path d="M9 3h6v7l4 9H5l4-9V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>`,
+      title: "Soil Texture & NASA Labs",
+      desc: "Analyze Clay/Sand/Silt composition, soil alkalinity (pH), and organic carbon percentages for every Punjab district.",
+      cta: "Go to Soil Lab →",
+      mode: "soil"
+    },
+    {
+      primary: false,
+      badge: "Open Data",
+      svg: `<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`,
+      title: "36-District Dataset & CSV Upload",
+      desc: "Upload your own farm CSV/JSON dataset or inspect and export the complete 36-district NASA & Punjab Crop Reporting dataset.",
+      cta: "Go to Datasets →",
+      mode: "data"
+    }
+  ],
+  ur: [
+    {
+      primary: true,
+      badge: "تجویز کردہ آغاز",
+      svg: `<svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>`,
+      title: "پنجاب کا نقشہ اور کسان ان پٹ",
+      desc: "پنجاب کے 36 اضلاع کا بڑا جغرافیائی نقشہ اور کسان ان پٹ پینل ایک ساتھ کھولیں۔ پانی اور موسم کے فلٹرز تبدیل کر کے لائیو نتائج دیکھیں۔",
+      cta: "نقشہ اور ورک اسپیس کھولیں ←",
+      mode: "map"
+    },
+    {
+      primary: false,
+      badge: "فیصلہ سازی انجن",
+      svg: `<svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+      title: "فصلوں کے چکر کی حکمت عملی (تمام 7)",
+      desc: "بغیر اسکرول کیے تمام 7 فصلوں کے چکر ایک ہی نظر میں دیکھیں — پانی کی بچت، نائٹروجن اور موسمی موافقت کے حساب سے 100 میں سے درجہ بندی۔",
+      cta: "فصلوں کے چکر دیکھیں ←",
+      mode: "rotation"
+    },
+    {
+      primary: false,
+      badge: "بارہ مہینوں کا شیڈول",
+      svg: `<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+      title: "بوائی اور کٹائی کا کیلنڈر",
+      desc: "خریف اور ربیع کی فصلوں کی بوائی، آبپاشی اور کٹائی کے اوقات کا بارہ مہینوں کا بصری چارٹ دیکھیں۔",
+      cta: "کیلنڈر دیکھیں ←",
+      mode: "phenology"
+    },
+    {
+      primary: false,
+      badge: "مالیات اور پیداوار",
+      svg: `<svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+      title: "ضلعی پیداوار اور منافع کیلکولیٹر",
+      desc: "اپنے رقبے کے مطابق فصل کی متوقع پیداوار اور پاکستانی روپے (PKR) میں خالص منافع کا حساب لگائیں۔",
+      cta: "پیداوار اور منافع دیکھیں ←",
+      mode: "yields"
+    },
+    {
+      primary: false,
+      badge: "ناسا SMAP اور مٹی",
+      svg: `<svg viewBox="0 0 24 24"><path d="M9 3h6v7l4 9H5l4-9V3z"/><line x1="9" y1="3" x2="15" y2="3"/></svg>`,
+      title: "مٹی کی ساخت اور ناسا لیب",
+      desc: "ہر ضلع کی چکنی مٹی، ریت اور بھل کا تناسب، کھاراپن (pH) اور نامیاتی کاربن کی مقدار جانچیں۔",
+      cta: "مٹی لیب دیکھیں ←",
+      mode: "soil"
+    },
+    {
+      primary: false,
+      badge: "اوپن ڈیٹا",
+      svg: `<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`,
+      title: "36 اضلاع کا ڈیٹا اور CSV اپ لوڈ",
+      desc: "اپنے کھیت کا ڈیٹا اپ لوڈ کریں یا پورے صوبے کا مصدقہ ڈیٹا ڈاؤن لوڈ کریں۔",
+      cta: "ڈیٹا دیکھیں ←",
+      mode: "data"
+    }
+  ]
+};
+
+/* STEP-BY-STEP INTERACTIVE TUTORIAL (HOW TO USE THE WEBSITE) */
+const TOUR_STEPS = {
+  en: [
+    { badge: "HOW TO USE · STEP 1 OF 6", mode: "map", target: "farmProfileCard", text: "1. **Enlarged Farmer Input Panel (Left)**: Select your Punjab District, Current Crop Rotation, Cultivated Area, Water Source, Primary Goal, and Weather Condition." },
+    { badge: "HOW TO USE · STEP 2 OF 6", mode: "map", target: "mapMainCard", text: "2. **Enlarged Punjab Geospatial Map (Right)**: Click any of the 36 district pins along the 5 rivers to inspect live NASA rainfall, soil wetness, and temperature." },
+    { badge: "HOW TO USE · STEP 3 OF 6", mode: "rotation", target: "allRotationsContainer", text: "3. **Automatic Filter Reaction & 7 Rotations**: Changing any filter (Water, Goal, Weather, or Rotation) automatically switches here so you can view all 7 rotations together at a glance." },
+    { badge: "HOW TO USE · STEP 4 OF 6", mode: "phenology", target: "phenologyMainCard", text: "4. **12-Month Sow & Harvest Calendar**: Check the Gantt matrix for exact Green Sowing, Blue Growth, and Orange Harvest windows." },
+    { badge: "HOW TO USE · STEP 5 OF 6", mode: "yields", target: "calculatorCard", text: "5. **Yields & PKR Profit Calculator**: Enter your input cost per hectare and selling price per 40kg maund to estimate net profit." },
+    { badge: "HOW TO USE · STEP 6 OF 6", mode: "soil", target: "soilMainCard", text: "6. **Soil Lab & Bottom Telemetry**: Inspect soil pH, organic carbon, and the fixed bottom NASA telemetry bar anytime. Click ✕ to close this tutorial." }
+  ],
+  ur: [
+    { badge: "استعمال کا طریقہ · مرحلہ 1 از 6", mode: "map", target: "farmProfileCard", text: "1. **کسان ان پٹ پینل (بائیں جانب)**: اپنا ضلع، موجودہ فصلوں کا چکر، رقبہ، پانی کا ذریعہ، ہدف اور موسمی صورتحال منتخب کریں۔" },
+    { badge: "استعمال کا طریقہ · مرحلہ 2 از 6", mode: "map", target: "mapMainCard", text: "2. **پنجاب کا جغرافیائی نقشہ (دائیں جانب)**: پانچ دریاؤں کے ساتھ 36 اضلاع میں سے کسی بھی ضلع پر کلک کر کے ناسا بارش اور نمی دیکھیں۔" },
+    { badge: "استعمال کا طریقہ · مرحلہ 3 از 6", mode: "rotation", target: "allRotationsContainer", text: "3. **فلٹرز اور تمام 7 فصلوں کے چکر**: جب آپ بائیں جانب فلٹر بدلتے ہیں تو تمام 7 فصلوں کے چکر ایک ہی نظر میں سامنے آ جاتے ہیں۔" },
+    { badge: "استعمال کا طریقہ · مرحلہ 4 از 6", mode: "phenology", target: "phenologyMainCard", text: "4. **بوائی اور کٹائی کا کیلنڈر**: بارہ مہینوں کے چارٹ میں سبز بوائی، نیلی نشوونما اور نارنجی کٹائی کے اوقات دیکھیں۔" },
+    { badge: "استعمال کا طریقہ · مرحلہ 5 از 6", mode: "yields", target: "calculatorCard", text: "5. **پیداوار اور منافع کیلکولیٹر**: فی ہیکٹر لاگت اور فی من ریٹ درج کر کے خالص منافع معلوم کریں۔" },
+    { badge: "استعمال کا طریقہ · مرحلہ 6 از 6", mode: "soil", target: "soilMainCard", text: "6. **مٹی لیب اور ٹیلی میٹری**: مٹی کا کھاراپن، کاربن اور نچلی ٹیلی میٹری پٹی دیکھیں۔ ٹیوٹوریل بند کرنے کے لیے ✕ دبائیں۔" }
+  ]
+};
+
+const I18N = {
+  en: {
+    brandTitle: "Field Shift <span>// Satellite Agriculture Intelligence</span>",
+    challengeSub: "NASA POWER · NASA SMAP L4 · Punjab Crop Statistics (2024–25)",
+    introStartTutBtn: "🎓 Enter with Step-by-Step Tutorial",
+    introEyebrow: "🛰️ BEGINNING GUIDE · CHOOSE YOUR DESTINATION",
+    introHeroHeading: "Where would you like to <span>begin today?</span>",
+    introHeroSub: "Select a destination below to enter the Field Shift workspace. By default, your enlarged Farmer Input Panel opens directly beside the enlarged 36-District Punjab Map and dynamically updates as you apply filters.",
+    introPrimaryEnter: "🗺️ Open Map & Farm Inputs →",
+    introFooterLeft: "Verified Telemetry: 36 Districts of Punjab · NASA POWER & SMAP L4 Soil Moisture",
+    introFooterRight: "Tip: You can return to this Beginning Guide anytime from the top navigation bar.",
+    btnBeginningGuide: "🏠 Beginning Guide",
+    btnStartTut: "🎓 Start Tutorial",
+    btnShare: "🔗 Share Plan",
+    btnPrint: "🖨️ Print",
+    btnCsv: "📥 CSV",
+    tabMap: "🗺️ Punjab Map",
+    tabRotation: "🔄 Crop Rotations (7)",
+    tabPhenology: "📅 Sow & Harvest Calendar",
+    tabYields: "🌾 Yields & Profit",
+    tabSoil: "🧪 Soil & NASA Labs",
+    tabData: "📂 36-District Data",
+    autoSwitchedMsg: "✨ Updated Rotations from your filters",
+    btnBackToMap: "🗺️ Back to Map",
+    btnViewRotationsFromMap: "🔄 View Recommended Rotations →",
+    farmProfileTitle: "📍 Farmer Profile & Decision Inputs",
+    lblDistrict: "1. Select District (Punjab):",
+    lblCurrentRot: "2. Your Current Crop Rotation:",
+    lblArea: "3. Cultivated Farm Area:",
+    lblWater: "4. Water Supply Source:",
+    wCanal: "Canal Water",
+    wTubewell: "Tube-Well",
+    wSaline: "Saline / Brackish",
+    wRainfed: "Rain-fed (Barani)",
+    lblPriority: "5. Primary Farming Goal:",
+    pWater: "Save Water",
+    pSoil: "Improve Soil",
+    pYield: "Higher Yield",
+    pStable: "Lower Risk",
+    lblScenario: "6. Weather Condition:",
+    sNormal: "Normal (2024–25)",
+    sHeat: "Heat Stress",
+    sDrought: "Low Rainfall",
+    sFlash: "Heavy Rain",
+    bestMatchBadge: "🏆 Top Recommended Crop Rotation",
+    scoreLabel: "Match Score (/100)",
+    mWaterSaved: "Water Difference vs Current",
+    mNFix: "Biological Nitrogen Fixation",
+    mNFixSub: "Natural soil enrichment",
+    mSoilIdx: "Soil Health Index",
+    mSoilSub: "Organic carbon & structure",
+    mStabIdx: "Yield Stability Index",
+    mStabSub: "Weather resilience",
+    allRotHeading: "All 7 Crop Rotations — Compact Side-by-Side Comparison",
+    mapTitle: "🗺️ Punjab Geospatial & Five-Rivers Satellite Map (36 Districts)",
+    mapClickHint: "Click any district pin on the Punjab map to inspect its satellite telemetry or apply filters on the left",
+    mapSelectedLbl: "Active Selected District",
+    mapRainLabel: "Annual Rainfall",
+    mapSoilLabel: "SMAP Wetness",
+    mapTempLabel: "Mean Temp",
+    mapSolarLabel: "Solar Radiation",
+    mapQuickJump: "Quick District Selector (All 36):",
+    phenoTitle: "📅 Visualized Crop Sowing, Growth & Harvest Calendar",
+    legSow: "Sowing Window",
+    legGrow: "Crop Growth & Irrigation",
+    legHarv: "Harvesting Window",
+    soilLabTitle: "🧪 District Soil Profile & NASA Satellite Measurements",
+    soilTexTitle: "Soil Texture (Clay / Sand / Silt)",
+    lblClay: "Clay",
+    lblSand: "Sand",
+    lblSilt: "Silt",
+    soilPhTitle: "Soil pH Level",
+    soilOcTitle: "Soil Organic Carbon (OC %)",
+    uploadTitle: "📂 Upload Custom Farmer Dataset (CSV / JSON)",
+    allDataTitle: "📂 Verified Provincial & NASA Satellite Dataset (36 Districts)",
+    btnDownloadCsv: "📥 Download CSV",
+    calcTitle: "🧮 Farm Cost & Profit Margin Calculator (PKR)",
+    calcInputCost: "Total Input Cost (PKR per ha):",
+    calcMarketPrice: "Market Selling Price (PKR / 40kg):",
+    calcTotalCost: "Total Farm Investment",
+    calcGrossRev: "Estimated Gross Revenue",
+    calcNetProfit: "Net Profit Margin",
+    botDistrict: "DISTRICT:",
+    botRain: "NASA RAIN:",
+    botTemp: "TEMP:",
+    months: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    sowLbl: "SOW",
+    harvLbl: "HARVEST",
+    growLbl: "GROW",
+    crops: { wheat: "Wheat", rice: "Rice", maize: "Maize", mung_bean: "Mung Bean", chickpea: "Chickpea" }
+  },
+  ur: {
+    brandTitle: "فیلڈ شفٹ <span>// سیٹلائٹ زرعی ذہانت</span>",
+    challengeSub: "ناسا پاور موسم · ناسا SMAP نمی · پنجاب فصلوں کے اعدادوشمار (2024–25)",
+    introStartTutBtn: "🎓 مرحلہ وار ٹیوٹوریل کے ساتھ داخل ہوں",
+    introEyebrow: "🛰️ ابتدائی رہنما · اپنی منزل منتخب کریں",
+    introHeroHeading: "آج آپ کہاں سے <span>آغاز کرنا چاہتے ہیں؟</span>",
+    introHeroSub: "ورک اسپیس میں داخل ہونے کے لیے نیچے کوئی بھی حصہ منتخب کریں۔ ابتدائی طور پر بڑا کسان ان پٹ پینل پنجاب کے بڑے نقشے کے ساتھ کھلے گا اور فلٹرز لگانے پر خودکار طریقے سے تبدیل ہوگا.",
+    introPrimaryEnter: "🗺️ نقشہ اور کسان ان پٹ کھولیں ←",
+    introFooterLeft: "مصدقہ ڈیٹا: پنجاب کے 36 اضلاع · ناسا پاور اور SMAP زمینی نمی",
+    introFooterRight: "مشورہ: آپ اوپر موجود بٹن سے کسی بھی وقت اس ابتدائی رہنما پر واپس آ سکتے ہیں.",
+    btnBeginningGuide: "🏠 ابتدائی رہنما",
+    btnStartTut: "🎓 ٹیوٹوریل شروع کریں",
+    btnShare: "🔗 پلان شیئر کریں",
+    btnPrint: "🖨️ پرنٹ",
+    btnCsv: "📥 ڈیٹا ڈاؤن لوڈ",
+    tabMap: "🗺️ پنجاب کا نقشہ",
+    tabRotation: "🔄 فصلوں کے چکر (7)",
+    tabPhenology: "📅 بوائی اور کٹائی کیلنڈر",
+    tabYields: "🌾 پیداوار اور منافع",
+    tabSoil: "🧪 مٹی اور ناسا لیب",
+    tabData: "📂 36 اضلاع کا ڈیٹا",
+    autoSwitchedMsg: "✨ آپ کے فلٹرز کے مطابق فصلوں کے چکر اپ ڈیٹ ہو گئے",
+    btnBackToMap: "🗺️ نقشے پر واپس جائیں",
+    btnViewRotationsFromMap: "🔄 تجویز کردہ فصلوں کے چکر دیکھیں ←",
+    farmProfileTitle: "📍 کسان کی پروفائل اور فیصلہ کن ان پٹ",
+    lblDistrict: "1. ضلع منتخب کریں (پنجاب):",
+    lblCurrentRot: "2. آپ کی موجودہ فصلوں کا چکر:",
+    lblArea: "3. زیرِ کاشت رقبہ:",
+    lblWater: "4. پانی کا ذریعہ:",
+    wCanal: "نہری پانی",
+    wTubewell: "ٹیوب ویل",
+    wSaline: "کھارا پانی",
+    wRainfed: "بارانی (بارش)",
+    lblPriority: "5. کسان کا بنیادی ہدف:",
+    pWater: "پانی کی بچت",
+    pSoil: "زمین کی زرخیزی",
+    pYield: "زیادہ پیداوار",
+    pStable: "کم خطرہ",
+    lblScenario: "6. موسمی صورتحال:",
+    sNormal: "معمول (2024–25)",
+    sHeat: "شدید گرمی",
+    sDrought: "کم بارش / خشک سالی",
+    sFlash: "زیادہ بارش",
+    bestMatchBadge: "🏆 بہترین تجویز کردہ فصلوں کا چکر",
+    scoreLabel: "درجہ بندی (/100)",
+    mWaterSaved: "موجودہ چکر کے مقابلے پانی کا فرق",
+    mNFix: "قدرتی نائٹروجن کا اضافہ",
+    mNFixSub: "زمین کی قدرتی بحالی",
+    mSoilIdx: "زمین کی صحت کا اشاریہ",
+    mSoilSub: "نامیاتی کاربن اور ساخت",
+    mStabIdx: "پیداواری استحکام",
+    mStabSub: "موسمی موافقت",
+    allRotHeading: "تمام 7 فصلوں کے چکر — ایک ساتھ موازنہ",
+    mapTitle: "🗺️ پنجاب کا جغرافیائی اور پانچ دریاؤں کا سیٹلائٹ نقشہ (36 اضلاع)",
+    mapClickHint: "سیٹلائٹ ڈیٹا دیکھنے کے لیے نقشے پر کسی بھی ضلع پر کلک کریں یا بائیں جانب فلٹرز لگائیں",
+    mapSelectedLbl: "منتخب کردہ ضلع",
+    mapRainLabel: "سالانہ بارش",
+    mapSoilLabel: "SMAP نمی",
+    mapTempLabel: "اوسط درجہ حرارت",
+    mapSolarLabel: "شمسی توانائی",
+    mapQuickJump: "فوری ضلع تبدیل کریں (تمام 36):",
+    phenoTitle: "📅 فصلوں کی بوائی، نشوونما اور کٹائی کا بصری کیلنڈر",
+    legSow: "بوائی کا وقت",
+    legGrow: "فصل کی نشوونما اور آبپاشی",
+    legHarv: "کٹائی کا وقت",
+    soilLabTitle: "🧪 ضلع کی مٹی اور ناسا سیٹلائٹ پیمائش",
+    soilTexTitle: "مٹی کی ساخت (چکنی مٹی / ریت / بھل)",
+    lblClay: "چکنی مٹی",
+    lblSand: "ریت",
+    lblSilt: "بھل",
+    soilPhTitle: "مٹی کی تیزابیت / کھاراپن (pH)",
+    soilOcTitle: "زمین میں نامیاتی کاربن (OC %)",
+    uploadTitle: "📂 کسٹم کسان ڈیٹا اپ لوڈ کریں (CSV / JSON)",
+    allDataTitle: "📂 مصدقہ صوبائی اور ناسا سیٹلائٹ ڈیٹا (36 اضلاع)",
+    btnDownloadCsv: "📥 CSV ڈاؤن لوڈ کریں",
+    calcTitle: "🧮 لاگت اور منافع کا کیلکولیٹر (PKR)",
+    calcInputCost: "کل لاگت (روپے فی ہیکٹر):",
+    calcMarketPrice: "مارکیٹ فروخت قیمت (روپے / 40kg):",
+    calcTotalCost: "کھیت میں کل سرمایہ کاری",
+    calcGrossRev: "متوقع کل آمدنی",
+    calcNetProfit: "خالص منافع کا مارجن",
+    botDistrict: "ضلع:",
+    botRain: "ناسا بارش:",
+    botTemp: "درجہ حرارت:",
+    months: ["جنوری","فروری","مارچ","اپریل","مئی","جون","جولائی","اگست","ستمبر","اکتوبر","نومبر","دسمبر"],
+    sowLbl: "بوائی",
+    harvLbl: "کٹائی",
+    growLbl: "نشوونما",
+    crops: { wheat: "گندم", rice: "چاول", maize: "مکئی", mung_bean: "مونگ", chickpea: "چنا" }
+  }
+};
+
+let state = {
+  lang: 'en',
+  inWorkspace: false,
+  mode: 'map',
+  district: 'Lahore',
+  currentRotationId: 'rice_wheat',
+  areaHa: 5.0,
+  waterSource: 'canal',
+  priority: 'water',
+  scenario: 'normal',
+  tutorialActive: false,
+  tourIndex: 0
+};
+
+const $ = id => document.getElementById(id);
+
+function dName(enName) {
+  return state.lang === 'ur' ? `${DISTRICT_URDU[enName] || enName} (${enName})` : enName;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(location.search);
+  if (params.has('lang') && (params.get('lang') === 'en' || params.get('lang') === 'ur')) state.lang = params.get('lang');
+  if (params.has('d') && DATA[params.get('d')]) state.district = params.get('d');
+  if (params.has('r') && ROTATIONS.some(x => x.id === params.get('r'))) state.currentRotationId = params.get('r');
+  if (params.has('a')) state.areaHa = Math.max(0.5, Math.min(100, parseFloat(params.get('a')) || 5.0));
+  if (params.has('w')) state.waterSource = params.get('w');
+  if (params.has('p')) state.priority = params.get('p');
+  if (params.has('s')) state.scenario = params.get('s');
+
+  applyLanguage();
+  syncControlsWithState();
+  updateAllViews();
+  renderPunjabMapPins();
+
+  if (params.has('tab')) {
+    enterWorkspace(params.get('tab'), false);
+  }
+});
+
+/* ============================================================================
+   NAVIGATION BETWEEN SEPARATE BEGINNING GUIDE & MAIN WORKSPACE
+   ============================================================================ */
+function enterWorkspace(targetMode = 'map', withTutorial = false) {
+  state.inWorkspace = true;
+  $('beginningGuidePortal').classList.add('hidden');
+  $('mainWorkspaceShell').classList.remove('hidden');
+  document.body.classList.add('in-workspace');
+
+  setMode(targetMode, false);
+  if (withTutorial) {
+    startTutorial();
+  } else {
+    closeTutorial();
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openBeginningGuide() {
+  state.inWorkspace = false;
+  closeTutorial();
+  $('mainWorkspaceShell').classList.add('hidden');
+  $('beginningGuidePortal').classList.remove('hidden');
+  document.body.classList.remove('in-workspace');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================================================
+   SEPARATE STEP-BY-STEP INTERACTIVE TUTORIAL CONTROLS
+   ============================================================================ */
+function startTutorial() {
+  state.tutorialActive = true;
+  state.tourIndex = 0;
+  $('stepTutorialDock').classList.remove('hidden');
+  executeTourStep();
+}
+
+function closeTutorial() {
+  state.tutorialActive = false;
+  $('stepTutorialDock').classList.add('hidden');
+  document.querySelectorAll('.guide-highlight').forEach(el => el.classList.remove('guide-highlight'));
+}
+
+function nextTourStep() {
+  const steps = TOUR_STEPS[state.lang];
+  state.tourIndex = (state.tourIndex + 1) % steps.length;
+  executeTourStep();
+}
+
+function prevTourStep() {
+  const steps = TOUR_STEPS[state.lang];
+  state.tourIndex = (state.tourIndex - 1 + steps.length) % steps.length;
+  executeTourStep();
+}
+
+function executeTourStep() {
+  const step = TOUR_STEPS[state.lang][state.tourIndex];
+  updateTourUI();
+  setMode(step.mode, false);
+  if (step.target) {
+    setTimeout(() => {
+      document.querySelectorAll('.guide-highlight').forEach(el => el.classList.remove('guide-highlight'));
+      const target = $(step.target);
+      if (target) {
+        void target.offsetWidth;
+        target.classList.add('guide-highlight');
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 90);
+  }
+}
+
+function updateTourUI() {
+  const step = TOUR_STEPS[state.lang][state.tourIndex];
+  if (!step) return;
+  $('tourBadge').textContent = step.badge;
+  $('tourDesc').innerHTML = step.text.replace(/\*\*(.*?)\*\*/g, '<b style="color:var(--warning)">$1</b>');
+}
+
+/* ============================================================================
+   BILINGUAL RENDERING & INTRO PORTAL CARDS
+   ============================================================================ */
+function toggleLanguage() {
+  state.lang = state.lang === 'en' ? 'ur' : 'en';
+  applyLanguage();
+  updateAllViews();
+  renderPunjabMapPins();
+}
+
+function applyLanguage() {
+  const isUr = state.lang === 'ur';
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = isUr ? 'rtl' : 'ltr';
+  $('btnLangToggle').textContent = isUr ? '🌐 English' : '🌐 اردو (Urdu)';
+  if ($('introLangToggle')) $('introLangToggle').textContent = isUr ? '🌐 English' : '🌐 اردو (Urdu)';
+  $('districtSearch').placeholder = isUr ? 'ضلع تلاش کریں...' : 'Search district...';
+  $('btnTourPrev').textContent = isUr ? '← پچھلا' : '← Prev';
+  $('btnTourNext').textContent = isUr ? 'اگلا مرحلہ →' : 'Next Step →';
+
+  const dict = I18N[state.lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) {
+      if (key === 'brandTitle' || key === 'introHeroHeading') el.innerHTML = dict[key];
+      else el.textContent = dict[key];
+    }
+  });
+
+  renderIntroDestinations();
+  populateDistrictSelector();
+  populateCurrentRotationSelector();
+  renderPhenologyTable();
+  renderOpenDataTable();
+  updateTourUI();
+}
+
+function renderIntroDestinations() {
+  const list = INTRO_DESTINATIONS[state.lang];
+  const container = $('introDestinationsGrid');
+  if (!container) return;
+
+  container.innerHTML = list.map(item => `
+    <div class="dest-card ${item.primary ? 'primary-dest' : ''}" onclick="enterWorkspace('${item.mode}', false)">
+      <div>
+        <div class="dest-top">
+          <div class="dest-icon">${item.svg}</div>
+          <div>
+            <span class="dest-badge">${item.badge}</span>
+            <h3 class="dest-title">${item.title}</h3>
+            <p class="dest-desc">${item.desc}</p>
+          </div>
+        </div>
+      </div>
+      <div class="dest-footer">
+        <span>${item.cta}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ============================================================================
+   ACCURATE PUNJAB PROVINCE SVG MAP
+   ============================================================================ */
+function projectPunjabCoords(lat, lng) {
+  const minLng = 69.8, maxLng = 75.3;
+  const minLat = 28.0, maxLat = 34.1;
+  const x = 45 + ((lng - minLng) / (maxLng - minLng)) * 315;
+  const y = 395 - ((lat - minLat) / (maxLat - minLat)) * 365;
+  return { x, y };
+}
+
+function renderPunjabMapPins() {
+  const group = $('punjabDistrictPins');
+  const quickList = $('mapDistrictQuickList');
+  if (!group) return;
+
+  const majorLabels = ["Lahore", "Multan", "Rawalpindi", "Faisalabad", "Bahawalpur", "Sargodha", "Dera Ghazi Khan", "Sialkot", "Rahim Yar Khan", "Mianwali"];
+
+  group.innerHTML = Object.entries(DATA).map(([name, d]) => {
+    const pt = projectPunjabCoords(d.lat, d.lng);
+    const isActive = name === state.district;
+    const showLabel = isActive || majorLabels.includes(name);
+    const labelText = state.lang === 'ur' ? (DISTRICT_URDU[name] || name) : name;
+
+    return `
+      <g class="district-pin ${isActive ? 'active' : ''}" transform="translate(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})" onclick="selectMapDistrict('${name}')">
+        <circle r="${isActive ? 8.5 : 4.5}" fill="${isActive ? '#10b981' : '#38bdf8'}" stroke="#070a0f" stroke-width="1.5"/>
+        ${showLabel ? `<text x="8" y="3.5">${labelText}</text>` : ''}
+      </g>
+    `;
+  }).join('');
+
+  if (quickList) {
+    quickList.innerHTML = Object.keys(DATA).sort().map(d => `
+      <button class="btn ${d === state.district ? 'btn-primary' : ''}" style="justify-content:flex-start; font-size:0.73rem; padding:0.34rem 0.55rem;" onclick="selectMapDistrict('${d}')">${dName(d)}</button>
+    `).join('');
+  }
+}
+
+function selectMapDistrict(d) {
+  state.district = d;
+  $('districtSelect').value = d;
+  updateAllViews();
+  renderPunjabMapPins();
+}
+
+/* ============================================================================
+   INPUT PANEL CONTROLS & DYNAMIC FILTER REACTION
+   ============================================================================ */
+function populateDistrictSelector(filter = '') {
+  const sel = $('districtSelect');
+  const q = filter.toLowerCase();
+  const keys = Object.keys(DATA).sort().filter(k =>
+    k.toLowerCase().includes(q) || (DISTRICT_URDU[k] && DISTRICT_URDU[k].includes(filter))
+  );
+  sel.innerHTML = keys.map(d =>
+    `<option value="${d}" ${d === state.district ? 'selected' : ''}>${dName(d)}</option>`
+  ).join('');
+  if (keys.length > 0 && !keys.includes(state.district)) {
+    state.district = keys[0];
+  }
+}
+
+function populateCurrentRotationSelector() {
+  const sel = $('currentRotationSelect');
+  sel.innerHTML = ROTATIONS.map(r =>
+    `<option value="${r.id}" ${r.id === state.currentRotationId ? 'selected' : ''}>${state.lang === 'ur' ? r.nameUr : r.nameEn}</option>`
+  ).join('');
+}
+
+function syncControlsWithState() {
+  $('areaSlider').value = Math.min(100, state.areaHa);
+  $('areaValDisplay').textContent = state.areaHa.toFixed(1);
+  $('areaAcresDisplay').textContent = (state.areaHa * 2.471).toFixed(1);
+  document.querySelectorAll('[data-water]').forEach(b => b.classList.toggle('active', b.dataset.water === state.waterSource));
+  document.querySelectorAll('[data-pri]').forEach(b => b.classList.toggle('active', b.dataset.pri === state.priority));
+  document.querySelectorAll('[data-scenario]').forEach(b => b.classList.toggle('active', b.dataset.scenario === state.scenario));
+}
+
+function filterDistricts(val) {
+  populateDistrictSelector(val);
+  updateAllViews();
+  renderPunjabMapPins();
+}
+
+function setMode(mode, shouldScroll = true) {
+  state.mode = mode;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  if (mode === 'map') {
+    $('autoSwitchPill').style.display = 'none';
+  }
+  const el = $(`view-${mode}`);
+  if (el) {
+    el.classList.add('active');
+    if (shouldScroll) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function reactToDecisionFilter() {
+  updateAllViews();
+  if (state.mode === 'map') {
+    setMode('rotation', false);
+    $('autoSwitchPill').style.display = 'inline-flex';
+  }
+}
+
+function onDistrictChange(d) {
+  state.district = d;
+  updateAllViews();
+  renderPunjabMapPins();
+}
+function onCurrentRotationChange(r) {
+  state.currentRotationId = r;
+  reactToDecisionFilter();
+}
+function onAreaChange(val) {
+  state.areaHa = parseFloat(val);
+  $('areaValDisplay').textContent = state.areaHa.toFixed(1);
+  $('areaAcresDisplay').textContent = (state.areaHa * 2.471).toFixed(1);
+  updateAllViews();
+}
+function setAreaPreset(val) {
+  state.areaHa = val;
+  syncControlsWithState();
+  updateAllViews();
+}
+function setWaterSource(src, el) {
+  state.waterSource = src;
+  el.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  reactToDecisionFilter();
+}
+function setPriority(pri, el) {
+  state.priority = pri;
+  el.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  reactToDecisionFilter();
+}
+function setScenario(sc, el) {
+  state.scenario = sc;
+  el.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  reactToDecisionFilter();
+}
+
+function shareProfileLink() {
+  const params = new URLSearchParams({
+    lang: state.lang, d: state.district, r: state.currentRotationId,
+    a: state.areaHa, w: state.waterSource, p: state.priority, s: state.scenario, tab: state.mode
+  });
+  const url = `${location.origin}${location.pathname}?${params.toString()}`;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(() => {
+      $('btnShareLink').textContent = state.lang === 'ur' ? '✅ کاپی ہو گیا!' : '✅ Copied!';
+      setTimeout(() => { $('btnShareLink').textContent = I18N[state.lang].btnShare; }, 2200);
+    });
+  } else {
+    const tmp = document.createElement('input');
+    tmp.value = url;
+    document.body.appendChild(tmp);
+    tmp.select();
+    document.execCommand('copy');
+    document.body.removeChild(tmp);
+    $('btnShareLink').textContent = state.lang === 'ur' ? '✅ کاپی ہو گیا!' : '✅ Copied!';
+    setTimeout(() => { $('btnShareLink').textContent = I18N[state.lang].btnShare; }, 2200);
+  }
+}
+
+/* ============================================================================
+   DATA COMPUTATION & VIEW RENDERING
+   ============================================================================ */
+function updateAllViews() {
+  const d = DATA[state.district];
+  if (!d) return;
+  const isUr = state.lang === 'ur';
+
+  $('botDistrictVal').textContent = `${dName(state.district)} (${d.id})`;
+  $('botRainVal').textContent = `${d.weather.rain} mm`;
+  $('botTempVal').textContent = `${d.weather.mean_temp}°C (${d.weather.min_temp}°–${d.weather.max_temp}°C)`;
+  $('botWetnessVal').textContent = `${d.weather.wetness}`;
+  $('botSolarVal').textContent = `${d.weather.solar} MJ/m²`;
+  $('botCoordsVal').textContent = `${d.lat.toFixed(2)}°N, ${d.lng.toFixed(2)}°E`;
+
+  $('districtQuickInfo').innerHTML = isUr
+    ? `<b>${dName(state.district)}</b> · بارش: <b>${d.weather.rain} mm</b> · مٹی: <b>${d.soil.clay}% چکنی، ${d.soil.oc}% کاربن</b>`
+    : `<b>${state.district}</b> · Rain: <b>${d.weather.rain} mm</b> · Soil: <b>${d.soil.clay}% Clay, ${d.soil.oc}% OC</b>`;
+
+  $('mapActiveDistrict').textContent = dName(state.district);
+  $('mapCoords').textContent = `${d.lat.toFixed(4)}° N, ${d.lng.toFixed(4)}° E`;
+  $('mapRainVal').textContent = `${d.weather.rain} mm`;
+  $('mapWetnessVal').textContent = `${d.weather.wetness}`;
+  $('mapTempVal').textContent = `${d.weather.mean_temp}°C`;
+  $('mapSolarVal').textContent = `${d.weather.solar} MJ`;
+  const zoneLabel = d.lat > 32.3 ? (isUr ? 'شمالی پنجاب' : 'Northern Punjab') : d.lat < 30.5 ? (isUr ? 'جنوبی پنجاب' : 'Southern Punjab') : (isUr ? 'وسطی پنجاب' : 'Central Punjab');
+  $('mapZoneBadge').textContent = zoneLabel;
+
+  updateRotationView();
+  updateYieldsView();
+  updateSoilLab();
+  calculateFinancials();
+}
+
+function scoreRotationsForProfile() {
+  const d = DATA[state.district];
+  const cropKeyMap = { 'Rice': 'rice', 'Wheat': 'wheat', 'Maize': 'maize', 'Chickpea': 'chickpea', 'Mung Bean': 'mung_bean' };
+
+  return ROTATIONS.map(rot => {
+    let yieldSum = 0;
+    rot.crops.forEach(c => {
+      const k = cropKeyMap[c];
+      yieldSum += (k && d.crops[k]) ? d.crops[k].yield : 3.2;
+    });
+    let yieldScore = Math.min(100, Math.max(40, (yieldSum / rot.crops.length) / 4.8 * 100));
+    let waterScore = Math.max(20, Math.min(100, (1 - rot.water / 1800) * 100));
+    let soilScore = rot.soilHealth;
+    let stabilityScore = rot.stability;
+
+    if (state.waterSource === 'saline') {
+      if (rot.crops.includes('Rice')) yieldScore *= 0.70;
+      if (rot.crops.includes('Chickpea')) yieldScore *= 0.85;
+    }
+    if (state.waterSource === 'rainfed') {
+      if (rot.crops.includes('Rice')) { yieldScore *= 0.45; waterScore *= 0.50; }
+      if (rot.crops.includes('Chickpea') || rot.crops.includes('Mung Bean')) { yieldScore *= 1.15; waterScore *= 1.25; }
+    }
+    if (state.scenario === 'heat') {
+      if (rot.crops.includes('Wheat')) yieldScore *= 0.86;
+      if (rot.crops.includes('Maize')) yieldScore *= 1.05;
+    }
+    if (state.scenario === 'drought') {
+      waterScore *= 1.30;
+      if (rot.crops.includes('Rice')) yieldScore *= 0.65;
+    }
+
+    let wYield = 0.25, wWater = 0.25, wSoil = 0.25, wStable = 0.25;
+    if (state.priority === 'water') { wWater = 0.45; wYield = 0.15; wSoil = 0.20; wStable = 0.20; }
+    if (state.priority === 'soil') { wSoil = 0.45; wWater = 0.20; wYield = 0.15; wStable = 0.20; }
+    if (state.priority === 'yield') { wYield = 0.45; wWater = 0.15; wSoil = 0.20; wStable = 0.20; }
+    if (state.priority === 'stable') { wStable = 0.45; wYield = 0.20; wWater = 0.20; wSoil = 0.15; }
+
+    const totalScore = Math.round(Math.min(100, Math.max(30, yieldScore * wYield + waterScore * wWater + soilScore * wSoil + stabilityScore * wStable)));
+    return { ...rot, totalScore, soilScore, stabilityScore: Math.round(stabilityScore) };
+  }).sort((a, b) => b.totalScore - a.totalScore);
+}
+
+function updateRotationView() {
+  const ranked = scoreRotationsForProfile();
+  const top = ranked[0];
+  const current = ranked.find(r => r.id === state.currentRotationId) || ranked[ranked.length - 1];
+  const isUr = state.lang === 'ur';
+
+  const topName = isUr ? top.nameUr : top.nameEn;
+  const curName = isUr ? current.nameUr : current.nameEn;
+
+  $('heroRotName').textContent = topName;
+  $('heroRotDesc').textContent = isUr ? top.descUr : top.descEn;
+  $('heroRotScore').textContent = `${top.totalScore} / 100`;
+  $('heroRotScore').className = `rot-score ${top.totalScore >= 80 ? 'score-badge-green' : top.totalScore >= 60 ? 'score-badge-amber' : 'score-badge-red'}`;
+  $('heroSoilIdx').textContent = `${top.soilScore} / 100`;
+  $('heroStabIdx').textContent = `${top.stabilityScore} / 100`;
+  $('heroNFix').textContent = `+${top.nitrogenFixation} kg N/ha`;
+
+  const waterDiffMm = current.water - top.water;
+  const waterDiffVol = Math.round(Math.abs(waterDiffMm) * state.areaHa * 10);
+
+  if (waterDiffMm > 0) {
+    $('heroWaterSaved').textContent = `-${waterDiffMm} mm`;
+    $('heroWaterVol').textContent = isUr ? `${waterDiffVol.toLocaleString()} m³ بچت` : `${waterDiffVol.toLocaleString()} m³ saved`;
+  } else if (waterDiffMm === 0) {
+    $('heroWaterSaved').textContent = `0 mm`;
+    $('heroWaterVol').textContent = isUr ? `برابر پانی` : `Same water`;
+  } else {
+    $('heroWaterSaved').textContent = `+${Math.abs(waterDiffMm)} mm`;
+    $('heroWaterVol').textContent = isUr ? `+${waterDiffVol.toLocaleString()} m³ (تیسری فصل)` : `+${waterDiffVol.toLocaleString()} m³ (3rd crop)`;
+  }
+
+  $('tradeoffAnalysisText').innerHTML = isUr
+    ? `<b>${dName(state.district)}</b> میں <b>${state.areaHa} ہیکٹر</b> پر <b>${curName}</b> (${current.totalScore}/100) کے بجائے <b>${topName}</b> (${top.totalScore}/100) اپنانے سے ${waterDiffMm >= 0 ? `<b style="color:var(--primary)">${waterDiffVol.toLocaleString()} مکعب میٹر پانی بچتا ہے</b>` : `اضافی پھلی دار فصل ملتی ہے`} اور <b style="color:var(--primary)">+${top.nitrogenFixation} kg N/ha</b> قدرتی نائٹروجن شامل ہوتی ہے۔`
+    : `In <b>${state.district}</b> across <b>${state.areaHa} ha</b>, switching from <b>${curName}</b> (${current.totalScore}/100) to <b>${topName}</b> (${top.totalScore}/100) ${waterDiffMm >= 0 ? `saves <b style="color:var(--primary)">${waterDiffVol.toLocaleString()} m³ of water</b>` : `adds a 3rd restorative crop`} and contributes <b style="color:var(--primary)">+${top.nitrogenFixation} kg N/ha</b> natural nitrogen.`;
+
+  $('allRotationsContainer').innerHTML = ranked.map((r, i) => {
+    const isCurrent = r.id === state.currentRotationId;
+    const scoreClass = r.totalScore >= 80 ? 'score-badge-green' : r.totalScore >= 60 ? 'score-badge-amber' : 'score-badge-red';
+    const badgeText = i === 0 ? (isUr ? '🏆 بہترین' : '🏆 #1 Match') : isCurrent ? (isUr ? '📍 موجودہ' : '📍 Current') : `#${i + 1}`;
+    return `
+      <div class="rotation-card ${i === 0 ? 'selected' : ''} ${isCurrent ? 'baseline-card' : ''}">
+        <div class="rot-card-header">
+          <div>
+            <span style="font-size:0.62rem; font-weight:700; color:${i===0?'var(--primary)':isCurrent?'var(--secondary)':'var(--muted-foreground)'}">${badgeText}</span>
+            <div class="rot-card-title">${isUr ? r.nameUr : r.nameEn}</div>
+          </div>
+          <div class="rot-score ${scoreClass}">${r.totalScore}</div>
+        </div>
+        <p class="rot-compact-desc">${isUr ? r.descUr : r.descEn}</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.2rem;padding-top:0.3rem;border-top:1px solid rgba(255,255,255,0.06);text-align:center;">
+          <div><div class="val" style="font-size:0.74rem;font-weight:700;color:#fff">${r.water}mm</div><div style="font-size:0.55rem;color:var(--muted-foreground)">${isUr?'پانی':'Water'}</div></div>
+          <div><div class="val" style="font-size:0.74rem;font-weight:700;color:var(--primary)">${r.soilScore}</div><div style="font-size:0.55rem;color:var(--muted-foreground)">${isUr?'زمین':'Soil'}</div></div>
+          <div><div class="val" style="font-size:0.74rem;font-weight:700;color:var(--secondary)">+${r.nitrogenFixation}</div><div style="font-size:0.55rem;color:var(--muted-foreground)">N-Fix</div></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateYieldsView() {
+  const d = DATA[state.district];
+  const isUr = state.lang === 'ur';
+  const dict = I18N[state.lang];
+
+  $('yieldsCardTitle').textContent = isUr
+    ? `🌾 ${dName(state.district)} — مصدقہ ضلعی پیداوار (2024–25)`
+    : `🌾 ${state.district} — Verified District Crop Yields (2024–25)`;
+  $('yieldsSubtitle').textContent = isUr
+    ? `آپ کے ${state.areaHa} ہیکٹر رقبے پر ہر فصل کی متوقع کل پیداوار:`
+    : `Recorded district average yield (t/ha) and total harvest for your ${state.areaHa} ha farm:`;
+
+  const keys = ['wheat', 'rice', 'maize', 'mung_bean', 'chickpea'];
+  $('districtCropCards').innerHTML = keys.map(k => {
+    const y = d.crops[k] ? d.crops[k].yield : 0;
+    const total = (y * state.areaHa).toFixed(2);
+    return `
+      <div class="metric-box">
+        <div class="label" style="font-size:0.84rem;font-weight:700;color:#fff">${dict.crops[k]}</div>
+        <div class="val" style="color:var(--primary);font-size:1.3rem">${y.toFixed(2)} t/ha</div>
+        <div class="sub">${isUr ? `کل (${state.areaHa} ha): <b>${total} ٹن</b>` : `Total (${state.areaHa} ha): <b>${total} tonnes</b>`}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function calculateFinancials() {
+  const d = DATA[state.district];
+  const avgYield = (d.crops.wheat.yield + d.crops.maize.yield) / 2;
+  const totalTonnes = avgYield * state.areaHa;
+  const totalMaunds = totalTonnes * 24.69;
+
+  const inputCostPerHa = parseFloat($('inputCostPerHa').value) || 75000;
+  const pricePerMaund = parseFloat($('marketPricePerMaund').value) || 3800;
+
+  const totalCost = inputCostPerHa * state.areaHa;
+  const grossRev = totalMaunds * pricePerMaund;
+  const netProfit = grossRev - totalCost;
+  const marginPct = grossRev > 0 ? (netProfit / grossRev) * 100 : 0;
+
+  $('resTotalCost').textContent = `PKR ${Math.round(totalCost).toLocaleString()}`;
+  $('resGrossRev').textContent = `PKR ${Math.round(grossRev).toLocaleString()}`;
+  $('resNetProfit').textContent = `PKR ${Math.round(netProfit).toLocaleString()}`;
+  $('resAreaSub').textContent = `For ${state.areaHa} ha farm`;
+  $('resYieldSub').textContent = `Est. ${totalMaunds.toFixed(0)} maunds`;
+  $('resMarginPct').textContent = `${marginPct.toFixed(1)}% Return`;
+}
+
+function updateSoilLab() {
+  const d = DATA[state.district];
+  const isUr = state.lang === 'ur';
+
+  $('soilDistrictTag').textContent = dName(state.district);
+  $('soilClayVal').textContent = `${d.soil.clay}%`;
+  $('soilSandVal').textContent = `${d.soil.sand}%`;
+  $('soilSiltVal').textContent = `${d.soil.silt}%`;
+
+  $('segClay').style.width = `${d.soil.clay}%`;
+  $('segClay').textContent = `${d.soil.clay}%`;
+  $('segSand').style.width = `${d.soil.sand}%`;
+  $('segSand').textContent = `${d.soil.sand}%`;
+  $('segSilt').style.width = `${d.soil.silt}%`;
+  $('segSilt').textContent = `${d.soil.silt}%`;
+
+  $('soilPhVal').textContent = `${d.soil.ph} pH`;
+  const phPct = Math.max(5, Math.min(95, ((d.soil.ph - 5.0) / 4.0) * 100));
+  $('phNeedle').style.left = `${phPct}%`;
+
+  $('soilOcVal').textContent = `${d.soil.oc}%`;
+  $('ocBarFill').style.width = `${Math.min(100, (d.soil.oc / 1.0) * 100)}%`;
+  $('soilOcDesc').textContent = isUr
+    ? `نامیاتی کاربن: ${d.soil.oc}% — پھلی دار فصلیں (چنا، مونگ) زمین کی زرخیزی بڑھاتی ہیں۔`
+    : `Soil Organic Carbon: ${d.soil.oc}% — Pulse crops (Chickpea, Mung bean) rebuild soil organic matter.`;
+}
+
+function renderPhenologyTable() {
+  const isUr = state.lang === 'ur';
+  const dict = I18N[state.lang];
+  $('phenoHeadRow').innerHTML = `<th>${isUr ? 'فصل / دورانیہ' : 'Crop / Cycle'}</th>` + dict.months.map(m => `<th>${m}</th>`).join('');
+
+  $('phenologyTableBody').innerHTML = PHENOLOGY.map(p => {
+    let cells = '';
+    for (let m = 0; m < 12; m++) {
+      let content = '';
+      if (m >= p.plantStart && m <= p.plantEnd) {
+        content = `<div class="gantt-bar bar-sow">${dict.sowLbl}</div>`;
+      } else if (m >= p.harvestStart && m <= p.harvestEnd) {
+        content = `<div class="gantt-bar bar-harvest">${dict.harvLbl}</div>`;
+      } else if ((p.plantEnd < p.harvestStart && m > p.plantEnd && m < p.harvestStart) ||
+                 (p.plantEnd > p.harvestStart && (m > p.plantEnd || m < p.harvestStart))) {
+        content = `<div class="gantt-bar bar-growth">${dict.growLbl}</div>`;
+      }
+      cells += `<td>${content}</td>`;
+    }
+    return `<tr><td style="font-weight:700;color:#fff;padding-left:0.75rem;">${isUr ? p.nameUr : p.nameEn}<br><small style="color:var(--muted-foreground)">${isUr ? p.seasonUr : p.seasonEn} (${p.duration}d)</small></td>${cells}</tr>`;
+  }).join('');
+}
+
+function handleCustomDatasetUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function() {
+    const isUr = state.lang === 'ur';
+    $('customUploadStatus').textContent = isUr
+      ? `✅ کامیابی سے فائل اپ لوڈ ہو گئی: ${file.name} (${(file.size/1024).toFixed(1)} KB)`
+      : `✅ Successfully loaded custom dataset: ${file.name} (${(file.size/1024).toFixed(1)} KB).`;
+  };
+  reader.readAsText(file);
+}
+
+function renderOpenDataTable() {
+  const isUr = state.lang === 'ur';
+  $('openDataHead').innerHTML = isUr
+    ? `<tr><th>کوڈ</th><th>ضلع</th><th>بارش (mm)</th><th>درجہ حرارت</th><th>SMAP نمی</th><th>چکنی مٹی</th><th>نامیاتی کاربن</th><th>pH</th><th>گندم</th><th>چاول</th><th>مکئی</th><th>مونگ</th><th>چنا</th></tr>`
+    : `<tr><th>ID</th><th>District</th><th>Rain (mm)</th><th>Mean Temp</th><th>SMAP Wetness</th><th>Clay %</th><th>OC %</th><th>pH</th><th>Wheat (t/ha)</th><th>Rice (t/ha)</th><th>Maize (t/ha)</th><th>Mung (t/ha)</th><th>Chickpea (t/ha)</th></tr>`;
+
+  $('openDataTableBody').innerHTML = Object.entries(DATA).map(([name, d]) => `
+    <tr>
+      <td><code>${d.id}</code></td>
+      <td><b>${dName(name)}</b></td>
+      <td>${d.weather.rain}</td>
+      <td>${d.weather.mean_temp}°C</td>
+      <td>${d.weather.wetness}</td>
+      <td>${d.soil.clay}%</td>
+      <td>${d.soil.oc}%</td>
+      <td>${d.soil.ph}</td>
+      <td><b>${d.crops.wheat.yield}</b></td>
+      <td><b>${d.crops.rice.yield}</b></td>
+      <td><b>${d.crops.maize.yield}</b></td>
+      <td><b>${d.crops.mung_bean.yield}</b></td>
+      <td><b>${d.crops.chickpea.yield}</b></td>
+    </tr>
+  `).join('');
+}
+
+function exportDataCSV() {
+  const headers = ['District_ID','District','Rain_mm','Mean_Temp_C','Max_Temp_C','Min_Temp_C','Solar_Rad','SMAP_Wetness','Clay_pct','Sand_pct','Silt_pct','OC_pct','pH','Wheat_t_ha','Rice_t_ha','Maize_t_ha','Mung_t_ha','Chickpea_t_ha'];
+  const rows = Object.entries(DATA).map(([name, d]) => [
+    d.id, name, d.weather.rain, d.weather.mean_temp, d.weather.max_temp, d.weather.min_temp,
+    d.weather.solar, d.weather.wetness, d.soil.clay, d.soil.sand, d.soil.silt, d.soil.oc, d.soil.ph,
+    d.crops.wheat.yield, d.crops.rice.yield, d.crops.maize.yield, d.crops.mung_bean.yield, d.crops.chickpea.yield
+  ]);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'Field_Shift_Punjab_Verified_36_Districts.csv';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+</body>
+</html>

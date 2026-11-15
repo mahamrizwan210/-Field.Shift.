@@ -1,0 +1,17 @@
+{
+  "name": "field-shift-agriculture-intelligence",
+  "version": "1.0.0",
+  "description": "Satellite Agriculture Intelligence & Crop Rotation Decision Engine for Punjab's 36 Districts",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "agriculture",
+    "nasa-power",
+    "smap",
+    "punjab",
+    "crop-rotation",
+    "geospatial"
+  ],
+  "license": "MIT"
+}
